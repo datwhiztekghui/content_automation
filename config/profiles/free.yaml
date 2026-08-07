@@ -1,0 +1,29 @@
+# Zero-cost profile — Ollama Cloud free tier preferred, local Ollama fallback
+name: free
+description: Free stack (Ollama Cloud free tier → local Ollama → DuckDuckGo → edge-tts)
+
+llm_provider: ollama_cloud
+search_provider: duckduckgo
+tts_provider: edge
+media_mode: free
+chunked_script: true
+dry_run_media: false
+auto_approve: false
+
+ollama_cloud:
+  base_url: https://ollama.com/v1
+  model: gpt-oss:20b
+
+ollama:
+  base_url: http://127.0.0.1:11434/v1
+  model: qwen2.5:7b
+
+edge_tts:
+  voice: en-GB-RyanNeural
+  rate: "-8%"
+  pitch: "+0Hz"
+
+notes:
+  - Create free API key: https://ollama.com/settings/keys
+  - Set OLLAMA_API_KEY=... in .env
+  - RyanNeural + slightly slower rate + SSML breaks = clearer, less robotic VO

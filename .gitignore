@@ -1,0 +1,45 @@
+# Secrets & local env
+.env
+.env.local
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Runtime data
+data/runs/*
+!data/runs/.gitkeep
+data/cache/*
+!data/cache/.gitkeep
+data/learnings/*
+!data/learnings/.gitkeep
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# YouTube OAuth tokens
+**/youtube_credentials.json
+**/token.json
+client_secret*.json
+
+# Generated media
+*.mp3
+*.wav
+*.mp4

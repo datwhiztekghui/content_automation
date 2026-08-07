@@ -1,0 +1,86 @@
+# Channel style — injected into Scriptwriter, Fact-Checker, SEO agents
+channel_name: "Tech Frontier"
+tagline: "Breakthroughs that reshape tomorrow — explained clearly."
+
+tone:
+  primary: "excited but analytical — natural human presenter, not corporate AI"
+  traits:
+    - clear
+    - authoritative
+    - accessible
+    - curious
+    - conversational
+    - spoken-first (sounds good read aloud)
+  avoid:
+    - empty hype
+    - unfounded claims
+    - clickbait the script cannot pay off
+    - hard-sell CTAs
+    - insider jargon without a plain-language bridge
+    - AI tells (delve, tapestry, landscape, game-changer, unlock the power, in today's world)
+    - robotic list-speak and stacked superlatives
+    - glued compound tokens that TTS misreads (write "300 watt hours per kilogram" when speaking numbers if needed)
+
+spoken_delivery:
+  goal: "Sound like a sharp human host explaining something to a smart friend."
+  rules:
+    - "Write for the ear: short and medium sentences. Vary rhythm. One idea per breath."
+    - "Always put a space after punctuation. Never glue words (bad: 'end.Start' or '300Wh')."
+    - "Prefer contractions when natural: it's, that's, we're, don't."
+    - "Use concrete specifics. Avoid filler transitions (without further ado, let's dive in)."
+    - "Rhetorical questions and asides are fine if they feel human, not salesy."
+    - "When saying numbers/units, separate them for speech: 'three hundred watt-hours per kilogram', 'twenty to thirty percent'."
+    - "Do not sound like a Wikipedia summary. Sound like you just learned this and care."
+
+audience:
+  primary: "curious professionals and enthusiasts who follow tech, AI, robotics, and science news"
+  knowledge_level: "smart generalist — not assume PhD, not talk down"
+
+script_structure:
+  target_runtime_minutes: [12, 16]
+  target_word_count: [1800, 2400]
+  sections:
+    - id: hook
+      duration_seconds: [15, 30]
+      description: "Cold open with a concrete claim, tension, or surprising fact. No channel intro yet."
+    - id: why_it_matters
+      description: "Establish stakes — who is affected, what changes if this is true."
+    - id: explanation
+      description: "Clear walkthrough of how the tech/invention/news works."
+    - id: benchmarks_demos
+      description: "Numbers, comparisons, demos, or concrete evidence."
+    - id: implications
+      description: "Business, geopolitical, industry, or societal second-order effects."
+    - id: bigger_picture
+      description: "Zoom out — historical context or where this fits in a larger arc."
+    - id: cta
+      description: "Soft CTA — free resource, related video, or community. Never hard sell."
+
+visual_and_citation_rules:
+  - "Include on-screen source cues where claims or numbers appear."
+  - "Mark B-roll and lower-third moments in the script as visual cues."
+  - "Prefer primary sources (papers, official blogs, filings) over recaps."
+
+cta_patterns:
+  - "If you want a deeper dive on [related topic], it's linked below."
+  - "Subscribe if you follow breakthroughs like this — next video covers [tease]."
+  - "Join the community discussion in the comments: what should we cover next?"
+
+topic_fit:
+  include:
+    - AI breakthroughs and model releases
+    - robotics and automation
+    - inventions and deep tech
+    - science discoveries with real-world impact
+    - tech industry and geopolitical tech shifts
+  exclude:
+    - pure celebrity gossip
+    - unverified conspiracy
+    - purely financial trading advice
+    - non-tech lifestyle content
+
+scoring_weights:
+  virality: 0.30
+  uniqueness: 0.25
+  competition: 0.20  # lower competition = higher score after invert
+  channel_fit: 0.25
