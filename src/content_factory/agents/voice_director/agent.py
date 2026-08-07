@@ -1,4 +1,7 @@
-"""Voice Director — natural edge-tts (RyanNeural) with SSML pacing."""
+"""Voice Director — natural edge-tts (RyanNeural) with plain-text synthesis.
+
+edge-tts builds its own SSML; we only ever send cleaned plain narration.
+"""
 
 from __future__ import annotations
 
@@ -10,7 +13,7 @@ from typing import Any
 from content_factory.agents.base import AgentContext, mark_done, mark_failed
 from content_factory.models.schemas import VideoScript, VoicePackage
 from content_factory.state import PipelineState
-from content_factory.tools.speech_text import narration_for_tts, to_ssml
+from content_factory.tools.speech_text import narration_for_tts
 from content_factory.tools.tts import TTSError, synthesize
 from content_factory.utils.logging import get_logger
 
@@ -67,7 +70,6 @@ def run_voice_director(state: PipelineState) -> dict[str, Any]:
             return mark_failed(stage, "No script available for voice")
         script = VideoScript.model_validate(raw)
 
-        # Per-section cleaned narration (clearer pauses when stitched)
         section_texts: list[str] = []
         markers = []
         for sec in script.sections:
@@ -83,16 +85,12 @@ def run_voice_director(state: PipelineState) -> dict[str, Any]:
                 }
             )
 
-        # Double newline between sections → paragraph breaks in SSML
         full_text = "\n\n".join(t for t in section_texts if t)
         narration_path = ctx.store.write_text("voice/narration_full.txt", full_text)
 
         voice = ctx.settings.edge_tts_voice or "en-GB-RyanNeural"
         rate = ctx.settings.edge_tts_rate or "-8%"
         pitch = ctx.settings.edge_tts_pitch or "+0Hz"
-        lang = "en-GB" if str(voice).startswith("en-GB") else "en-US"
-        ssml = to_ssml(full_text, voice=voice, rate=rate, pitch=pitch, lang=lang)
-        ctx.store.write_text("voice/narration.ssml", ssml)
 
         tts_provider = ctx.settings.resolve_tts_provider()
         force_dry = bool(state.get("dry_run_media", True)) and tts_provider == "elevenlabs"
@@ -112,7 +110,7 @@ def run_voice_director(state: PipelineState) -> dict[str, Any]:
             "voice": voice,
             "rate": rate,
             "pitch": pitch,
-            "ssml": True,
+            "mode": "plain",
         }
         dry = True
         meta: dict[str, Any] = {}
@@ -125,29 +123,25 @@ def run_voice_director(state: PipelineState) -> dict[str, Any]:
                         "Narration very long (%s chars); synthesis may take a while",
                         len(full_text),
                     )
-                # Per-section synthesis avoids long-SSML hangs and improves pacing
                 section_paths: list[str] = []
-                use_ssml = bool(getattr(ctx.settings, "edge_tts_use_ssml", True))
                 for i, (sec, cleaned) in enumerate(
                     zip(script.sections, section_texts)
                 ):
                     if not cleaned.strip():
                         continue
-                    sec_out = ctx.store.path(
-                        f"voice/section_{i:02d}_{sec.id}.mp3"
-                    )
+                    sec_out = ctx.store.path(f"voice/section_{i:02d}_{sec.id}.mp3")
                     sec_meta = synthesize(
                         cleaned,
                         sec_out,
                         settings=ctx.settings,
                         provider=tts_provider if tts_provider != "auto" else "edge",
-                        use_ssml=use_ssml,
                     )
                     section_paths.append(sec_meta["path"])
                     log.info(
-                        "Section VO %s → %s bytes",
+                        "Section VO %s → %s bytes mode=%s",
                         sec.id,
                         sec_meta.get("bytes"),
+                        sec_meta.get("mode"),
                     )
 
                 if section_paths:
@@ -159,7 +153,7 @@ def run_voice_director(state: PipelineState) -> dict[str, Any]:
                         "voice": voice,
                         "rate": rate,
                         "pitch": pitch,
-                        "mode": "sectioned-ssml" if use_ssml else "sectioned",
+                        "mode": "sectioned-plain",
                         "path": str(out),
                         "sections": section_paths,
                     }

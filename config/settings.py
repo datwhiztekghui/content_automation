@@ -70,7 +70,8 @@ class Settings(BaseSettings):
     # Slightly slower than default improves word separation for tech scripts
     edge_tts_rate: str = Field(default="-8%", alias="EDGE_TTS_RATE")
     edge_tts_pitch: str = Field(default="+0Hz", alias="EDGE_TTS_PITCH")
-    edge_tts_use_ssml: bool = Field(default=True, alias="EDGE_TTS_USE_SSML")
+    # Deprecated: edge-tts always uses plain text (library builds SSML internally)
+    edge_tts_use_ssml: bool = Field(default=False, alias="EDGE_TTS_USE_SSML")
     piper_model_path: str = Field(default="", alias="PIPER_MODEL_PATH")
 
     # Voice (paid optional)

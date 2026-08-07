@@ -1,4 +1,4 @@
-from content_factory.tools.speech_text import normalize_spoken_text, to_ssml
+from content_factory.tools.speech_text import narration_for_tts, normalize_spoken_text
 
 
 def test_spaces_after_punctuation():
@@ -12,7 +12,6 @@ def test_unit_spacing():
 
 
 def test_soft_hyphen_removed():
-    # soft hyphen often glues words in TTS
     glued = "inter\u00adfacial"
     assert "\u00ad" not in normalize_spoken_text(glued)
 
@@ -23,12 +22,27 @@ def test_ai_tells_stripped():
     assert "landscape" not in out.lower()
 
 
-def test_ssml_contains_breaks_and_voice():
-    ssml = to_ssml(
-        "First sentence. Second sentence.",
-        voice="en-GB-RyanNeural",
-        rate="-8%",
+def test_ssml_markup_never_reaches_tts_payload():
+    dirty = (
+        "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' "
+        "xml:lang='en-GB'><voice name='en-GB-RyanNeural'>"
+        "<prosody rate='-8%' pitch='+0Hz'>"
+        "Hello world. "
+        '<break time="320ms"/>'
+        "Second sentence."
+        "</prosody></voice></speak>"
     )
-    assert "en-GB-RyanNeural" in ssml
-    assert "break" in ssml
-    assert "First sentence" in ssml
+    out = narration_for_tts(dirty)
+    assert "<speak" not in out.lower()
+    assert "<break" not in out.lower()
+    assert "prosody" not in out.lower()
+    assert "xmlns" not in out.lower()
+    assert "Hello world" in out
+    assert "Second sentence" in out
+    assert "<" not in out
+    assert ">" not in out
+
+
+def test_break_time_phrase_stripped():
+    out = narration_for_tts('Hello break time="320ms" there')
+    assert "break time" not in out.lower()

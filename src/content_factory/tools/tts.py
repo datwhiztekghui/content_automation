@@ -1,4 +1,8 @@
-"""Free TTS backends: edge-tts (default), optional Piper, ElevenLabs later."""
+"""Free TTS backends: edge-tts (default), optional Piper, ElevenLabs later.
+
+edge-tts MUST receive plain text only. It constructs its own SSML internally.
+Passing <speak>/<break>/... as the message causes those tags to be read aloud.
+"""
 
 from __future__ import annotations
 
@@ -8,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from config.settings import Settings, get_settings
-from content_factory.tools.speech_text import narration_for_tts, to_ssml
+from content_factory.tools.speech_text import narration_for_tts
 from content_factory.utils.logging import get_logger
 
 log = get_logger(__name__)
@@ -24,7 +28,7 @@ def synthesize(
     *,
     settings: Settings | None = None,
     provider: str | None = None,
-    use_ssml: bool = True,
+    use_ssml: bool = False,  # kept for API compat; ignored (always plain text)
 ) -> dict[str, Any]:
     """Synthesize speech to out_path. Returns metadata dict."""
     settings = settings or get_settings()
@@ -36,21 +40,19 @@ def synthesize(
         raise TTSError("TTS provider is none")
 
     if provider == "edge":
-        return _edge_tts(text, out_path, settings, use_ssml=use_ssml)
+        return _edge_tts(text, out_path, settings)
     if provider == "piper":
         return _piper(text, out_path, settings)
     if provider == "elevenlabs":
         raise TTSError("ElevenLabs live path not enabled in free stack — use edge")
 
-    return _edge_tts(text, out_path, settings, use_ssml=use_ssml)
+    return _edge_tts(text, out_path, settings)
 
 
 def _edge_tts(
     text: str,
     out_path: Path,
     settings: Settings,
-    *,
-    use_ssml: bool = True,
 ) -> dict[str, Any]:
     try:
         import edge_tts
@@ -58,74 +60,45 @@ def _edge_tts(
         raise TTSError("edge-tts not installed. Run: pip install edge-tts") from exc
 
     voice = settings.edge_tts_voice or "en-GB-RyanNeural"
-    # Slightly slower = clearer word separation for tech explainers
     rate = settings.edge_tts_rate or "-8%"
     pitch = getattr(settings, "edge_tts_pitch", None) or "+0Hz"
 
     if out_path.suffix.lower() not in {".mp3", ".wav"}:
         out_path = out_path.with_suffix(".mp3")
 
+    # ALWAYS plain text — edge-tts wraps this in SSML itself
     plain = narration_for_tts(text)
-    payload = plain
-    mode = "plain"
-    if use_ssml:
-        # Infer language from voice prefix
-        lang = "en-GB" if voice.startswith("en-GB") else "en-US"
-        if voice.startswith("en-AU"):
-            lang = "en-AU"
-        payload = to_ssml(plain, voice=voice, rate=rate, pitch=pitch, lang=lang)
-        mode = "ssml"
+    if not plain.strip():
+        raise TTSError("Empty narration after normalization")
+
+    # Guard: refuse to synthesize if markup leaked through
+    if "<speak" in plain.lower() or "<break" in plain.lower() or "<prosody" in plain.lower():
+        plain = narration_for_tts(plain)
+    if "<" in plain or ">" in plain:
+        plain = plain.replace("<", " ").replace(">", " ")
+        plain = " ".join(plain.split())
 
     async def _run() -> None:
-        # When using SSML, rate/pitch are inside SSML; pass neutral kwargs
-        if mode == "ssml":
-            communicate = edge_tts.Communicate(payload, voice)
-        else:
-            communicate = edge_tts.Communicate(
-                payload, voice, rate=rate, pitch=pitch
-            )
+        communicate = edge_tts.Communicate(plain, voice, rate=rate, pitch=pitch)
         await communicate.save(str(out_path))
 
     log.info(
-        "edge-tts voice=%s rate=%s mode=%s chars=%s → %s",
+        "edge-tts voice=%s rate=%s mode=plain chars=%s → %s",
         voice,
         rate,
-        mode,
         len(plain),
         out_path,
     )
     try:
         asyncio.run(_run())
-    except Exception as first_exc:  # noqa: BLE001
-        # SSML can fail on some voices — fall back to cleaned plain text
-        if mode == "ssml":
-            log.warning("SSML TTS failed (%s); retrying plain text", first_exc)
-
-            async def _run_plain() -> None:
-                communicate = edge_tts.Communicate(
-                    plain, voice, rate=rate, pitch=pitch
-                )
-                await communicate.save(str(out_path))
-
-            try:
-                asyncio.run(_run_plain())
-                mode = "plain-fallback"
-            except RuntimeError:
-                loop = asyncio.new_event_loop()
-                try:
-                    loop.run_until_complete(_run_plain())
-                    mode = "plain-fallback"
-                finally:
-                    loop.close()
-        else:
-            try:
-                loop = asyncio.new_event_loop()
-                try:
-                    loop.run_until_complete(_run())
-                finally:
-                    loop.close()
-            except Exception as exc:  # noqa: BLE001
-                raise TTSError(str(exc)) from exc
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        try:
+            loop.run_until_complete(_run())
+        finally:
+            loop.close()
+    except Exception as exc:  # noqa: BLE001
+        raise TTSError(str(exc)) from exc
 
     if not out_path.exists() or out_path.stat().st_size == 0:
         raise TTSError("edge-tts produced empty file")
@@ -135,7 +108,7 @@ def _edge_tts(
         "voice": voice,
         "rate": rate,
         "pitch": pitch,
-        "mode": mode,
+        "mode": "plain",
         "path": str(out_path),
         "format": out_path.suffix.lstrip("."),
         "bytes": out_path.stat().st_size,

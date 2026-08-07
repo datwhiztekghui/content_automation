@@ -42,7 +42,6 @@ def main(run_id: str) -> None:
                 out,
                 settings=settings,
                 provider="edge",
-                use_ssml=True,
             )
             print(
                 f"  bytes={meta.get('bytes')} mode={meta.get('mode')} voice={meta.get('voice')}"

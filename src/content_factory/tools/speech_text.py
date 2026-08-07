@@ -1,8 +1,12 @@
-"""Prepare narration for natural, clearly spaced TTS (edge-tts friendly)."""
+"""Prepare narration for natural, clearly spaced TTS (edge-tts friendly).
+
+IMPORTANT: edge-tts expects PLAIN TEXT only. It builds its own internal SSML.
+Never pass <speak>, <break>, or other markup to the synthesizer — it will be
+read aloud as words.
+"""
 
 from __future__ import annotations
 
-import html
 import re
 import unicodedata
 
@@ -27,6 +31,18 @@ AI_TELL_PATTERNS = [
     (re.compile(r"\bIt's (?:important|crucial) to (?:note|understand) that\b", re.I), ""),
 ]
 
+# Markup that must never be spoken (if accidentally present in source text)
+SSML_OR_XML_RE = re.compile(
+    r"</?\s*(?:speak|voice|prosody|break|p|s|emphasis|say-as|sub|audio|mark)"
+    r"(?:\s[^>]*)?>",
+    re.I,
+)
+XML_TAG_RE = re.compile(r"<[^>]+>")
+XML_ATTR_SPEAK_RE = re.compile(
+    r"\b(?:version|xmlns|xml:lang|name|rate|pitch|time)\s*=\s*['\"][^'\"]*['\"]",
+    re.I,
+)
+
 
 def strip_ai_tells(text: str) -> str:
     out = text
@@ -35,12 +51,33 @@ def strip_ai_tells(text: str) -> str:
     return out
 
 
+def strip_ssml_and_markup(text: str) -> str:
+    """Remove SSML/XML so synthesizers never read tags aloud."""
+    t = text
+    t = SSML_OR_XML_RE.sub(" ", t)
+    t = XML_TAG_RE.sub(" ", t)
+    t = XML_ATTR_SPEAK_RE.sub(" ", t)
+    # Leftover phrases if tags were partially spoken from bad prior outputs
+    t = re.sub(
+        r"\b(?:speak version|xmlns|xml lang|prosody rate|prosody pitch|"
+        r"break time|voice name)\b[:\s=]*",
+        " ",
+        t,
+        flags=re.I,
+    )
+    return t
+
+
 def normalize_spoken_text(text: str) -> str:
-    """Clean narration so TTS speaks distinct words and natural pauses."""
+    """Clean narration so TTS speaks distinct words and natural pauses.
+
+    Returns PLAIN TEXT only — safe to pass to edge-tts Communicate().
+    """
     if not text:
         return ""
 
     t = unicodedata.normalize("NFKC", text)
+    t = strip_ssml_and_markup(t)
 
     # Drop markdown / stage directions that shouldn't be spoken
     t = re.sub(r"```[\s\S]*?```", " ", t)
@@ -51,19 +88,24 @@ def normalize_spoken_text(text: str) -> str:
     t = re.sub(r"^#+\s*", "", t, flags=re.M)
 
     # Unify dashes / quotes
-    t = t.replace("\u2014", " — ")  # em dash → spaced
+    t = t.replace("\u2014", " — ")
     t = t.replace("\u2013", " – ")
-    t = t.replace("\u2011", "-")  # non-breaking hyphen
-    t = t.replace("\u00ad", "")  # soft hyphen (causes word join bugs)
-    t = t.replace("\u00a0", " ")  # nbsp
-    t = t.replace("\u200b", "")  # zero-width space
+    t = t.replace("\u2011", "-")
+    t = t.replace("\u00ad", "")
+    t = t.replace("\u00a0", " ")
+    t = t.replace("\u200b", "")
     t = t.replace("\u200c", "").replace("\u200d", "")
     t = t.replace(""", '"').replace(""", '"')
     t = t.replace("'", "'").replace("'", "'")
 
     # Units / tech tokens: force space so TTS does not glue words
     t = re.sub(r"(\d)\s*[–—-]\s*(\d)", r"\1 to \2", t)
-    t = re.sub(r"(\d)(Wh|kWh|mAh|GHz|MHz|GB|TB|MB|kg|km|mm|nm|ms|μs)\b", r"\1 \2", t, flags=re.I)
+    t = re.sub(
+        r"(\d)(Wh|kWh|mAh|GHz|MHz|GB|TB|MB|kg|km|mm|nm|ms|μs)\b",
+        r"\1 \2",
+        t,
+        flags=re.I,
+    )
     t = re.sub(r"(\d)%", r"\1 percent", t)
     t = re.sub(
         r"\$(\d+(?:,\d{3})*(?:\.\d+)?)\s*(million|billion|thousand)?",
@@ -73,26 +115,26 @@ def normalize_spoken_text(text: str) -> str:
     )
     t = re.sub(r"\b(\d+)x\b", r"\1 times", t, flags=re.I)
 
-    # Missing space after punctuation between words: "end.Start" → "end. Start"
+    # Missing space after punctuation
     t = re.sub(r"([.!?])([A-Z])", r"\1 \2", t)
     t = re.sub(r"([,;:])([A-Za-z])", r"\1 \2", t)
-    # Missing space before capital mid-sentence glue: "wordWord" is hard; fix camel only after lower
     t = re.sub(r"([a-z])([A-Z])", r"\1 \2", t)
-
-    # Slash phrases: "and/or" ok; "power/density" → "power density"
     t = re.sub(r"([A-Za-z]{2,})/([A-Za-z]{2,})", r"\1 \2", t)
 
-    # Collapse whitespace; keep paragraph breaks as double newline for SSML
+    # Plain-text pacing: keep sentence ends; paragraph → blank line for human read
     t = re.sub(r"[ \t]+", " ", t)
     t = re.sub(r" *\n+ *", "\n\n", t)
     t = re.sub(r" {2,}", " ", t)
     t = t.strip()
 
     t = strip_ai_tells(t)
-    # Second whitespace pass after phrase rewrites
     t = re.sub(r"[ \t]+", " ", t)
     t = re.sub(r" +([,.!?;:])", r"\1", t)
     t = re.sub(r"([.!?])([A-Za-z])", r"\1 \2", t)
+
+    # Final safety: if any angle brackets remain, strip them
+    t = re.sub(r"[<>]", " ", t)
+    t = re.sub(r" {2,}", " ", t)
     return t.strip()
 
 
@@ -104,53 +146,6 @@ def _expand_money_simple(m: re.Match[str]) -> str:
     return f"{num} dollars"
 
 
-def to_ssml(
-    text: str,
-    *,
-    voice: str = "en-GB-RyanNeural",
-    rate: str = "-8%",
-    pitch: str = "+0Hz",
-    lang: str = "en-GB",
-) -> str:
-    """Build SSML with sentence/paragraph breaks for clearer word separation."""
-    cleaned = normalize_spoken_text(text)
-    if not cleaned:
-        cleaned = " "
-
-    paragraphs = [p.strip() for p in re.split(r"\n\s*\n", cleaned) if p.strip()]
-    if not paragraphs:
-        paragraphs = [cleaned]
-
-    body_parts: list[str] = []
-    for pi, para in enumerate(paragraphs):
-        # Split on sentence end while keeping the terminator
-        sentences = re.split(r"(?<=[.!?])\s+", para)
-        sent_parts: list[str] = []
-        for si, sent in enumerate(sentences):
-            sent = sent.strip()
-            if not sent:
-                continue
-            # Light comma breathing: already in text; escape XML
-            safe = html.escape(sent, quote=True)
-            # Prefer period endings for pause; if missing, still speak
-            sent_parts.append(safe)
-            if si < len(sentences) - 1:
-                sent_parts.append('<break time="320ms"/>')
-        body_parts.append(" ".join(sent_parts))
-        if pi < len(paragraphs) - 1:
-            body_parts.append('<break time="550ms"/>')
-
-    inner = " ".join(body_parts)
-    # edge-tts expects rate/pitch on Communicate kwargs OR in prosody
-    return (
-        f"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{lang}'>"
-        f"<voice name='{html.escape(voice)}'>"
-        f"<prosody rate='{html.escape(rate)}' pitch='{html.escape(pitch)}'>"
-        f"{inner}"
-        f"</prosody></voice></speak>"
-    )
-
-
 def narration_for_tts(text: str) -> str:
-    """Plain text path (non-SSML): normalized spoken prose."""
+    """Plain text for edge-tts — never includes SSML/XML markup."""
     return normalize_spoken_text(text)
