@@ -166,13 +166,14 @@ see `config/channel_visual_style.yaml`).
 
 **Credibility + retention rules (non-negotiable):**
 - Mix: `kinetic_stat` · `logo_card` · `person_plate` · `ui_screen` · `cinematic_broll` · `comparison_card` · `geo_map` · `timeline`
-- **Companies → show REAL logos** (official capture, not AI mush)
-- **CEOs / public figures → show REAL photos** when they are part of the news (official/news stills; reference-first only — never invent faces)
-- **Proof = real screenshots** of reputable sources
-- **Numbers = CapCut kinetic type** with source footers
-- **Thumbnails:** face or product hero + 2–5 word text + high contrast (see `thumbnail_system`)
-- Cinematic AI stills = energy metaphors between identity/proof shots
+- **Companies → logos ON the image** where the story is about that company (sharp brand mark / holographic sign)
+- **Burned-in titles** for the main claim on hero frames (peer style); CapCut for extra captions
+- **CEOs / public figures → REAL photos** when they drive the news (capture / reference-first — never invent faces)
+- **Proof screenshots** of real articles/product pages
+- **Thumbnails:** hero (robot/CEO/product) + logo + 2–6 word mega text
+- **Only ban AI watermarks** (Gemini/Grok/Midjourney stamps) — not logos or titles
 - Hook cuts ~2–4s; body ~4–7s
+- Gemini handoff: `scripts/build_gemini_prompts.py` → `visuals/GEMINI_PROMPTS.md`
 
 ---
 

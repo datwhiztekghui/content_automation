@@ -44,32 +44,28 @@ BODY_SHOT_SECONDS = 5.0
 PRIORITY_GENERATE_CAP = 32
 
 PHOTOREAL_SUFFIX = (
-    "Cinematic tech-commercial still, dark grade with cyan rim light, "
-    "photoreal materials, shallow DOF, YouTube 16:9, no watermark, "
-    "no burned-in text. (Logos and real faces are CAPTURED assets, not invented here.)"
+    "Ultra-detailed cinematic 3D CGI, Unreal Engine 5 look, volumetric blue/cyan light, "
+    "server racks, holographic HUDs, bold burned-in claim typography when specified, "
+    "sharp company logo in-frame when specified, YouTube 16:9, "
+    "NO AI generator watermark, NO stock watermark."
 )
 
 SYSTEM = """You are the Creative Director for Tech Frontier — competing with
 AI Revolution–class tech/AI news channels (high energy, dense motion design).
 
-VISUAL LANGUAGE (study peer winners):
-- Kinetic typography for every major number and claim
-- REAL company logos on screen when the company is named
-- REAL photos of CEOs / public figures when they are part of the story
-- Real screenshots of articles, product pages, filings
-- Cinematic AI/tech B-roll between proof shots
-- Comparison cards, geo maps, timelines
-- Thumbnails: FACE or PRODUCT hero + 2–5 word text + high contrast
+VISUAL LANGUAGE (ByteDance / AI Revolution commercial CGI):
+- Humanoid robot or product hero in server halls, holograms, cyan volumetric light
+- REAL company logos ON key frames (sharp, official-looking)
+- BOLD burned-in English titles for the shot claim (2–6 words) — like “10 TRILLION PARAMETERS”
+- REAL CEO/public-figure photos when they drive the story (capture or reference-first)
+- Real screenshots for proof beats
+- Thumbnails: hero + logo + giant text
 - Cut every 2–5s on hook, 4–7s mid-roll
+- ONLY ban AI-generator watermarks — logos and titles are REQUIRED where they matter
 
-IDENTITY LAW (non-negotiable for product/news stories):
-- Audience must SEE logos and relevant public figures — not name-only plates
-- Capture official/news portraits and brand assets; do NOT invent faces from scratch
-- Reference-first if AI-editing a real portrait; never pure deepfake invent
-
-STORY LAW:
-- Every shot has a story_link to THIS topic's facts
-- Prefer verified numbers from research + news hits
+IDENTITY LAW:
+- Product news must SHOW the brand mark and relevant people, not name-only plates
+- Portraits: official/news capture; reference-first AI only — never invent a face from nothing
 
 Return JSON with keys:
 creative_strategy, verified_story_beats, shot_list, broll_prompts,

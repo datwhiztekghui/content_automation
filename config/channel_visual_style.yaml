@@ -1,5 +1,6 @@
 # Competitive visual DNA — peer bar: AI Revolution / high-retention tech news
-# Product/news stories MUST show real companies, logos, and public figures (captured, not invented).
+# Reference look: cinematic 3D CGI hero (robot/AI), server halls, holograms,
+# BOLD burned-in titles + company branding (ByteDance-style). Only ban AI watermarks.
 
 channel_name: "Tech Frontier"
 peer_references:
@@ -7,92 +8,90 @@ peer_references:
     example_url: "https://www.youtube.com/watch?v=MEw7TrAUEPQ"
     traits:
       - rapid visual change (every 2–5s on hooks; 4–7s mid-roll)
-      - kinetic typography for numbers and claims
-      - REAL company logos on screen (clean capture / official assets)
-      - REAL CEO / public-figure photos when the person is part of the story
-      - product UI demos and screen captures of REAL sources
-      - cinematic tech B-roll as energy between proof shots
-      - high-contrast thumbnails: face OR product + huge text + emotion
-      - dark grade, cyan/magenta energy accents
+      - cinematic 3D CGI / premium AI-commercial look (robot, holograms, data centers)
+      - company logos ON the image when the story is about that company
+      - bold burned-in headline text for the one claim of the shot
+      - CEO / public-figure photos when they drive the news
+      - kinetic numbers and comparison energy
+      - dark blue cyan grade, high contrast thumbnails
 
 brand_grade:
-  background: "near-black / deep navy"
-  accent_primary: "electric cyan"
-  accent_secondary: "hot magenta / amber for warnings"
-  type: "bold geometric sans, massive numbers"
-  motion: "snap zooms, whip pans on stills, count-up numbers, glitch accents sparingly"
+  background: "near-black / deep navy / server-room blue"
+  accent_primary: "electric cyan / neon blue"
+  accent_secondary: "amber / hot white for main title"
+  type: "massive bold sans, 2–6 words primary claim, smaller subline"
+  motion: "snap zooms, hologram flickers, light streaks"
+
+# Image generation prompt law (Grok Imagine / Gemini / Midjourney)
+image_prompt_rules:
+  must_include_when_relevant:
+    - company logo or brand signage (Meta, OpenAI, ByteDance, NVIDIA, etc.)
+    - bold English on-image title for the shot’s main claim
+    - optional Chinese/local brand lettering if that market is the story
+    - holographic UI / neural graphs / robot or agent hero when fitting
+  must_exclude:
+    - AI generator watermarks (Midjourney/Gemini/Grok stamp, stock watermark)
+    - muddy unreadable logo approximations (prefer sharp official-looking mark)
+  style_lock: |
+    Ultra-detailed cinematic 3D CGI, Unreal Engine 5 look, volumetric blue light,
+    reflective chrome and matte white robot surfaces when a humanoid is used,
+    dense server racks with RGB LEDs and cable rainbows, floating holographic
+    panels with neural network diagrams, dramatic rim light, shallow DOF,
+    YouTube 16:9 thumbnail-ready composition, left or right hero, opposite side
+    for giant typography. Photoreal materials, not flat cartoon.
+
+thumbnail_system:
+  formula: "HERO (robot/CEO/product) + LOGO + 2–6 WORD MEGA TEXT + high contrast"
+  rules:
+    - Giant title readable at phone size
+    - Company logo clearly visible
+    - One primary claim only
+    - Dark tech background, cyan/amber accents
+    - Face or robot looking toward text block when possible
 
 must_have_asset_classes:
   - kinetic_stat
   - comparison_card
-  - ui_screen              # real product / news article screenshots
-  - logo_card              # official company logos (captured)
-  - person_plate           # real photo of CEO/judge/AG/founder (captured)
+  - ui_screen
+  - logo_card
+  - person_plate
   - cinematic_broll
   - news_headline
   - geo_map
   - timeline
-  - proof_quote            # quote + real portrait when speaker is named
+  - proof_quote
   - end_brand
 
-# Identity & brand capture policy (news authenticity)
 identity_and_brands:
   policy: |
-    When a company, product, CEO, celebrity, or public figure is central to the news,
-    the audience must SEE them — not only read their name on a lower-third.
-    Capture real assets. Do not invent photoreal faces from imagination alone.
+    Product/company news must SHOW logos and relevant public figures.
+    Logos and burned-in claim text belong ON key frames (thumb + cold open +
+    major beats). Only AI-service watermarks are forbidden.
   logo_sources:
     - official press kit / brand resources
-    - company About / Newsroom pages
-    - Wikipedia / Wikimedia Commons (when licensed)
-    - high-res freeze from official YouTube keynotes (fair-use commentary)
+    - sharp on-image logo in CGI shots
+    - newsroom assets
   person_photo_sources:
-    - official portraits / newsroom headshots
-    - Reuters / AP / Getty / outlet stills (respect license)
-    - Wikimedia Commons portraits when available
-    - reference-first AI edit ONLY when a real reference image is available
-  never:
-    - pure text nameplate with zero logo/face for a product/CEO story
-    - invented deepfake faces with no reference photo
-    - mushy AI-guessed logos
-  fair_use_note: "Commentary/criticism news explainers; prefer official assets; credit sources on screen."
-
-# Thumbnail design (subscriber CTR)
-thumbnail_system:
-  formula: "FACE or PRODUCT hero + EMOTION + 2–5 WORD TEXT + HIGH CONTRAST"
-  rules:
-    - One clear subject (CEO face, product device, or dramatic logo moment)
-    - Face when a public figure drives the story (Zuckerberg, Altman, etc.)
-    - Giant readable CapCut text (2–5 words max) — never rely on AI text
-    - Dark background, rim light, pop color accent
-    - Curiosity gap without lying about the video
-    - Avoid clutter; leave negative space for type
-  layouts:
-    - face_left_text_right
-    - product_center_text_banner
-    - logo_vs_logo_split
-    - face_plus_big_number
+    - official portraits / news stills
+    - reference-first edits from real photos
 
 banned_as_primary_visual:
-  - empty courtrooms with no story graphics
-  - random server rooms disconnected from the claim
-  - generic phone scrolling as 40% of runtime
-  - name-only cards when a real logo/portrait exists and should be shown
-  - AI-invented faces without a real reference capture
-  - illegible mush logos
+  - empty rooms with no story graphics
+  - soft documentary stills with zero type or brand
+  - name-only cards when logo/face should appear
+  - AI generator watermarks
 
 free_tier:
-  stills: "Grok Imagine for cinematic energy only"
-  identity: "Capture real logos + portraits via search/download/screenshot pipeline"
-  motion: "CapCut keyframes + free templates"
-  text_and_charts: "ALWAYS CapCut"
-  real_proof: "Screenshot official blogs, news, court PDFs, product pages"
+  stills: "Gemini / Grok Imagine / equivalent — cinematic CGI style lock"
+  identity: "Capture real portraits + render sharp logos in-frame"
+  text_on_image: "Burn main claim text into hero frames; CapCut for extra captions"
+  real_proof: "Screenshot official pages when numbers need source credibility"
 
 hook_recipe:
   cut_interval_sec: [2, 4]
   pattern:
-    - kinetic_stat_cold_open
+    - mega_title_logo_hero
     - logo_card_or_ceo_portrait
-    - cinematic_shock_broll
-    - product_ui_screen
+    - cinematic_cgi_broll
+    - product_ui_or_hologram
     - kinetic_stat_reinforce
