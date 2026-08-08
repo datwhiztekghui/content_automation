@@ -156,11 +156,16 @@ Dry-run writes narration text + marker plan without API spend.
 |--|--|
 | **Package** | `agents/visual_director` |
 | **Stage** | `visual_director` |
-| **Goal** | Shot list, B-roll prompts, lower-thirds, 3–5 thumbnail concepts |
-| **Inputs** | Final script (+ optional voice markers) |
-| **Outputs** | `VisualPackage` → `visuals/` |
+| **Goal** | **News-grounded** creative direction: story-linked shots, proof cards, brand-trust visuals, thumbnails |
+| **Inputs** | Final script + **research brief** + live news search |
+| **Outputs** | `VisualPackage` + `creative_strategy.json` + `story_beats.json` + Imagine queue → `visuals/` |
 
-B-roll prompts should be usable with **Kling / Runway / Grok Imagine / stock** keyword packs.
+**Credibility rules (non-negotiable):**
+- Every shot needs a `story_link` to the actual news/event — **no generic filler B-roll**
+- Ground in research + web hits; correct amounts/venues when reporting contradicts a thin brief
+- No deepfake faces of public figures; names via CapCut lower-thirds
+- No burned-in text/logos/watermarks in AI stills; facts/sources as editor overlays
+- Prefer news-archive search queries + photoreal documentary prompts for Grok Imagine / stock
 
 ---
 

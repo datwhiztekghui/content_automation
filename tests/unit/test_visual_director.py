@@ -1,14 +1,14 @@
 from content_factory.agents.visual_director.agent import (
     TARGET_SHOT_SECONDS,
+    _build_grounded_package,
+    _detect_story_profile,
     _enrich_prompt,
-    _heuristic_dense_visuals,
+    _meta_nm_story_pack,
 )
 from content_factory.models.schemas import ScriptSection, VideoScript
 
 
-def _sample_script(minutes: float = 11.0) -> VideoScript:
-    # ~150 wpm * minutes
-    words = int(150 * minutes)
+def _sample_script(topic: str = "Meta Public Nuisance Ruling $567 Million") -> VideoScript:
     sections = [
         ScriptSection(
             id="hook",
@@ -62,34 +62,54 @@ def _sample_script(minutes: float = 11.0) -> VideoScript:
         ),
     ]
     return VideoScript(
-        title_working="Test Topic",
-        topic_title="Test Topic Meta Court Ruling",
+        title_working=topic,
+        topic_title=topic,
         sections=sections,
-        word_count=words,
-        estimated_runtime_minutes=minutes,
+        word_count=1500,
+        estimated_runtime_minutes=11.0,
     ).recompute_stats()
 
 
-def test_dense_shots_for_long_form():
-    script = _sample_script(11)
-    pkg = _heuristic_dense_visuals(script)
-    # ~11 min / 6s ≈ 110 shots; allow some slack
+def test_detect_meta_profile():
+    g = {
+        "brief_overview": "New Mexico public nuisance Meta child safety",
+        "brief_claims": ["$567 million"],
+        "news_hits": [{"title": "Meta New Mexico", "snippet": "public nuisance"}],
+    }
+    assert (
+        _detect_story_profile("Meta public nuisance $567M", g)
+        == "meta_nm_child_safety_public_nuisance"
+    )
+
+
+def test_meta_pack_has_story_links():
+    pack = _meta_nm_story_pack()
+    assert len(pack["seeds"]) >= 8
+    assert all(s.get("story_link") for s in pack["seeds"])
+    assert any("567" in b["fact"] or "375" in b["fact"] for b in pack["beats"])
+
+
+def test_grounded_package_dense_and_linked():
+    script = _sample_script()
+    grounding = {
+        "brief_overview": "Meta New Mexico child safety public nuisance",
+        "brief_claims": [],
+        "news_hits": [],
+        "uncertainty_flags": [],
+    }
+    pkg, extras = _build_grounded_package(
+        script, grounding, "meta_nm_child_safety_public_nuisance"
+    )
     assert len(pkg.shot_list) >= 80
-    assert len(pkg.broll_prompts) == len(pkg.shot_list)
-    assert len(pkg.thumbnail_concepts) >= 5
+    assert all(s.get("story_link") for s in pkg.shot_list)
+    assert all(b.get("story_link") for b in pkg.broll_prompts)
+    assert extras.get("creative_strategy", {}).get("story_one_liner")
+    # No random unlinked server-only prompts without story_link
+    assert "New Mexico" in (extras["creative_strategy"]["story_one_liner"] or "")
 
 
-def test_prompts_photoreal_no_text_watermark_cues():
-    script = _sample_script(10)
-    pkg = _heuristic_dense_visuals(script)
-    sample = pkg.broll_prompts[0]["prompt"].lower()
-    assert "photoreal" in sample or "photorealistic" in sample
-    assert "watermark" in sample
-    assert "no text" in sample or "text overlay" in sample
-
-
-def test_enrich_prompt_appends_quality_bar():
-    out = _enrich_prompt("A courthouse exterior at dusk", "topic")
+def test_enrich_prompt():
+    out = _enrich_prompt("New Mexico courthouse exterior")
     assert "photoreal" in out.lower() or "photorealistic" in out.lower()
     assert "watermark" in out.lower()
 
