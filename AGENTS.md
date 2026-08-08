@@ -160,17 +160,19 @@ Dry-run writes narration text + marker plan without API spend.
 | **Inputs** | Final script + **research brief** + live news search |
 | **Outputs** | `VisualPackage` + `creative_strategy.json` + `story_beats.json` + Imagine queue → `visuals/` |
 
-**Competitive bar:** AI Revolution–class faceless tech news  
-(ref style: dense cuts, kinetic numbers, cinematic tech B-roll, real screenshots —  
+**Competitive bar:** AI Revolution–class tech news  
+(ref: dense cuts, kinetic numbers, logos, real people, product UI —  
 see `config/channel_visual_style.yaml`).
 
 **Credibility + retention rules (non-negotiable):**
-- Mix asset classes: `kinetic_stat` · `comparison_card` · `ui_screen` · `cinematic_broll` · `logo_card` · `geo_map` · `timeline`
-- **Proof = real screenshots** of reputable sources (not AI-fake newspapers)
+- Mix: `kinetic_stat` · `logo_card` · `person_plate` · `ui_screen` · `cinematic_broll` · `comparison_card` · `geo_map` · `timeline`
+- **Companies → show REAL logos** (official capture, not AI mush)
+- **CEOs / public figures → show REAL photos** when they are part of the news (official/news stills; reference-first only — never invent faces)
+- **Proof = real screenshots** of reputable sources
 - **Numbers = CapCut kinetic type** with source footers
-- Cinematic AI stills are *metaphors* locked to the claim being spoken — not empty rooms
-- No deepfake public figures; no burned-in AI text/logos/watermarks
-- Hook cuts ~2–4s; body ~4–7s — peer energy, not slow documentary
+- **Thumbnails:** face or product hero + 2–5 word text + high contrast (see `thumbnail_system`)
+- Cinematic AI stills = energy metaphors between identity/proof shots
+- Hook cuts ~2–4s; body ~4–7s
 
 ---
 

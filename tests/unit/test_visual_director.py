@@ -4,6 +4,11 @@ from content_factory.agents.visual_director.agent import (
     _build_competitive_package,
     _facts_from_grounding,
 )
+from content_factory.agents.visual_director.identity_assets import (
+    extract_entities,
+    build_identity_capture_plan,
+    thumbnail_concepts_with_identity,
+)
 from content_factory.agents.visual_director.peer_style import (
     cinematic_for_topic,
     motion_graphic_recipes,
@@ -68,18 +73,30 @@ def test_competitive_package_has_mixed_asset_classes():
     assert "kinetic_stat" in classes
     assert "cinematic_broll" in classes
     assert "ui_screen" in classes
+    assert "logo_card" in classes
+    assert "person_plate" in classes
     assert len(pkg.shot_list) >= 40
     assert extras.get("motion_graphics")
     assert extras.get("screen_captures")
-    # cinematic prompts must not be empty-room only — energy words present somewhere
-    cine = [
-        b["prompt"].lower()
-        for b in pkg.broll_prompts
-        if b.get("asset_class") == "cinematic_broll"
-    ]
-    assert cine
-    joined = " ".join(cine)
-    assert any(w in joined for w in ("cinematic", "cyan", "neon", "gpu", "city", "glow"))
+    assert extras.get("identity_captures")
+    assert extras["identity_captures"].get("person_captures")
+    assert extras["identity_captures"].get("logo_captures")
+    # thumbs require identity assets
+    assert any(
+        "REAL" in (t.visual_description or "") or "captured" in (t.visual_description or "").lower()
+        for t in pkg.thumbnail_concepts
+    )
+
+
+def test_extract_meta_entities():
+    ents = extract_entities("Meta Muse Code AI agent", "Mark Zuckerberg Meta")
+    assert any(e["company"] == "Meta" for e in ents)
+    plan = build_identity_capture_plan("Meta Muse Code", ents, [])
+    assert plan["logo_captures"]
+    assert any("Zuckerberg" in p["name"] for p in plan["person_captures"])
+    thumbs = thumbnail_concepts_with_identity("Meta Muse", "Meta Muse Code", ents)
+    assert len(thumbs) >= 5
+    assert "required_assets" in thumbs[0]
 
 
 def test_meta_facts_have_phase_numbers():

@@ -14,6 +14,11 @@ import math
 from typing import Any
 
 from content_factory.agents.base import AgentContext, mark_done, mark_failed
+from content_factory.agents.visual_director.identity_assets import (
+    build_identity_capture_plan,
+    extract_entities,
+    thumbnail_concepts_with_identity,
+)
 from content_factory.agents.visual_director.peer_style import (
     cinematic_for_topic,
     load_visual_style,
@@ -41,39 +46,38 @@ PRIORITY_GENERATE_CAP = 32
 PHOTOREAL_SUFFIX = (
     "Cinematic tech-commercial still, dark grade with cyan rim light, "
     "photoreal materials, shallow DOF, YouTube 16:9, no watermark, "
-    "no burned-in text, no trademark logos, no celebrity deepfake faces."
+    "no burned-in text. (Logos and real faces are CAPTURED assets, not invented here.)"
 )
 
 SYSTEM = """You are the Creative Director for Tech Frontier — competing with
-AI Revolution–class faceless tech/AI news channels (high energy, dense motion design).
+AI Revolution–class tech/AI news channels (high energy, dense motion design).
 
 VISUAL LANGUAGE (study peer winners):
 - Kinetic typography for every major number and claim
-- Cinematic AI/tech B-roll (GPU halls, city dual-skylines, neural light sculpture)
-- Real screenshots of articles, papers, product pages
-- Comparison cards and leaderboards
-- Geo maps when China/US/EU matter
-- Logo cards as CLEAN VECTOR in editor (not AI)
+- REAL company logos on screen when the company is named
+- REAL photos of CEOs / public figures when they are part of the story
+- Real screenshots of articles, product pages, filings
+- Cinematic AI/tech B-roll between proof shots
+- Comparison cards, geo maps, timelines
+- Thumbnails: FACE or PRODUCT hero + 2–5 word text + high contrast
 - Cut every 2–5s on hook, 4–7s mid-roll
-- Dark navy + cyan/magenta energy
+
+IDENTITY LAW (non-negotiable for product/news stories):
+- Audience must SEE logos and relevant public figures — not name-only plates
+- Capture official/news portraits and brand assets; do NOT invent faces from scratch
+- Reference-first if AI-editing a real portrait; never pure deepfake invent
 
 STORY LAW:
 - Every shot has a story_link to THIS topic's facts
 - Prefer verified numbers from research + news hits
-- No generic empty courtrooms as 50% of runtime
-- No deepfake public figures
 
 Return JSON with keys:
 creative_strategy, verified_story_beats, shot_list, broll_prompts,
-motion_graphics, screen_captures, lower_thirds, on_screen_facts,
+motion_graphics, screen_captures, identity_captures, lower_thirds, on_screen_facts,
 thumbnail_concepts, retention_notes, generate_queue, editor_brand_kit
 
-shot_list items need: shot_id, section_id, start_sec, duration_sec, type,
-purpose, story_link, on_screen_action, capcut_overlay, asset_class, priority
 asset_class one of: kinetic_stat, comparison_card, ui_screen, cinematic_broll,
-news_headline, geo_map, timeline, logo_card, proof_quote, end_brand
-
-broll_prompts: only for cinematic_broll / generative stills — photoreal prompts.
+news_headline, geo_map, timeline, logo_card, person_plate, proof_quote, end_brand
 """
 
 
@@ -197,6 +201,16 @@ def _build_competitive_package(
     style: dict[str, Any],
 ) -> tuple[VisualPackage, dict[str, Any]]:
     facts = _facts_from_grounding(grounding, script.topic_title)
+    extra_blob = " ".join(
+        [
+            grounding.get("brief_overview") or "",
+            " ".join(grounding.get("brief_claims") or []),
+        ]
+    )
+    entities = extract_entities(script.topic_title, extra_blob)
+    identity = build_identity_capture_plan(
+        script.topic_title, entities, grounding.get("news_hits") or []
+    )
     cinematics = cinematic_for_topic(script.topic_title)
     mg = motion_graphic_recipes(facts)
     screens = screen_capture_plan(script.topic_title, grounding.get("news_hits") or [])
@@ -209,19 +223,24 @@ def _build_competitive_package(
     global_t = 0.0
     cine_i = 0
     fact_i = 0
+    person_i = 0
+    logo_i = 0
+    people_list = identity.get("person_captures") or []
+    logo_list = identity.get("logo_captures") or []
 
-    # Asset class rotation = peer channel rhythm
-    # K=kinetic, C=cinematic, U=ui/screen, M=map/compare
+    # Peer rhythm: proof + identity often, cinematic energy between
     rhythm = [
         "kinetic_stat",
+        "logo_card",
         "cinematic_broll",
+        "person_plate",
         "ui_screen",
         "kinetic_stat",
         "cinematic_broll",
         "comparison_card",
-        "cinematic_broll",
-        "news_headline",
         "logo_card",
+        "person_plate",
+        "news_headline",
         "cinematic_broll",
     ]
 
@@ -241,20 +260,54 @@ def _build_competitive_package(
                 asset_class = "end_brand"
             if sec.id == "hook" and i == 0:
                 asset_class = "kinetic_stat"
+            if sec.id == "hook" and i == 1 and logo_list:
+                asset_class = "logo_card"
+            if sec.id == "hook" and i == 2 and people_list:
+                asset_class = "person_plate"
 
             fact = facts[fact_i % len(facts)]
             if asset_class in {"kinetic_stat", "news_headline", "proof_quote", "comparison_card"}:
                 fact_i += 1
 
+            person = people_list[person_i % len(people_list)] if people_list else None
+            logo = logo_list[logo_i % len(logo_list)] if logo_list else None
+            if asset_class == "person_plate" and people_list:
+                person_i += 1
+            if asset_class == "logo_card" and logo_list:
+                logo_i += 1
+
             start_sec = global_t + i * slot
-            priority = 1 if (sec.id == "hook" or asset_class in {"kinetic_stat", "ui_screen"} or i < 2) else 2
+            priority = (
+                1
+                if (
+                    sec.id == "hook"
+                    or asset_class
+                    in {"kinetic_stat", "ui_screen", "logo_card", "person_plate"}
+                    or i < 2
+                )
+                else 2
+            )
 
             story_link = (
                 f"VO section '{sec.title}' · claim support: {fact.get('fact','')[:100]}"
             )
+            if asset_class == "person_plate" and person:
+                story_link = (
+                    f"Show REAL photo of {person.get('name')} ({person.get('role')}) — "
+                    f"not a name-only card"
+                )
+            if asset_class == "logo_card" and logo:
+                story_link = (
+                    f"Show REAL {logo.get('company')} logo on screen — brand recognition"
+                )
+
             overlay = ""
             if asset_class in {"kinetic_stat", "news_headline", "comparison_card", "proof_quote"}:
                 overlay = fact.get("fact", "")[:90]
+            if asset_class == "person_plate" and person:
+                overlay = f"{person.get('name')} · {person.get('role')}"
+            if asset_class == "logo_card" and logo:
+                overlay = logo.get("company", "")
             source_lt = (
                 f"Source: {fact.get('source')}"
                 if asset_class in {"kinetic_stat", "news_headline", "ui_screen"}
@@ -342,8 +395,63 @@ def _build_competitive_package(
                     }
                 )
                 generate_queue.append(sid)
+            elif asset_class == "logo_card":
+                broll.append(
+                    {
+                        "shot_id": sid,
+                        "section_id": sec.id,
+                        "story_link": story_link,
+                        "asset_class": "logo_card",
+                        "provider_hints": ["official_brand_download", "screenshot"],
+                        "aspect_ratio": "16:9",
+                        "style": "identity_capture",
+                        "prompt": (
+                            f"CAPTURE REAL LOGO: {logo.get('search_query') if logo else script.topic_title + ' logo'}. "
+                            f"Company: {(logo or {}).get('company', '')}. "
+                            "Use official PNG/SVG or high-res newsroom asset. "
+                            "Do NOT invent logo with AI. Place on dark navy with subtle glow."
+                        ),
+                        "capture": logo,
+                        "negative_cues": "no AI-guessed logos",
+                        "stock_keywords": [(logo or {}).get("company", ""), "logo"],
+                        "news_search_query": (logo or {}).get("search_query", ""),
+                        "motion_hint": "logo slam 0.3s + hold 1.2s",
+                        "priority": 1,
+                    }
+                )
+                generate_queue.append(sid)
+            elif asset_class == "person_plate":
+                broll.append(
+                    {
+                        "shot_id": sid,
+                        "section_id": sec.id,
+                        "story_link": story_link,
+                        "asset_class": "person_plate",
+                        "provider_hints": [
+                            "official_portrait",
+                            "news_still",
+                            "reference_first_edit",
+                        ],
+                        "aspect_ratio": "16:9",
+                        "style": "identity_capture",
+                        "prompt": (
+                            f"CAPTURE REAL PHOTO: {(person or {}).get('name', 'public figure')}. "
+                            f"Role: {(person or {}).get('role', '')}. "
+                            f"Search: {(person or {}).get('search_query', '')}. "
+                            "Use official portrait or reputable news still. "
+                            "Optional: image_edit with that photo as reference for grade match only. "
+                            "NEVER pure text-to-image invent of a real person."
+                        ),
+                        "capture": person,
+                        "negative_cues": "no invented deepfake without reference",
+                        "stock_keywords": [(person or {}).get("name", ""), "portrait"],
+                        "news_search_query": (person or {}).get("search_query", ""),
+                        "motion_hint": "push-in on face 2s + name lower-third",
+                        "priority": 1,
+                    }
+                )
+                generate_queue.append(sid)
             else:
-                # Motion graphic / logo / map — editor-built; still list for timeline
                 broll.append(
                     {
                         "shot_id": sid,
@@ -379,65 +487,20 @@ def _build_competitive_package(
 
         global_t += dur
 
-    # Thumbs: high CTR peer style
-    t = script.topic_title
+    # Thumbs: FACE/LOGO/PRODUCT hero (real captures) + CapCut text
+    thumb_raw = thumbnail_concepts_with_identity(
+        script.topic_title, script.title_working, entities
+    )
     thumbs = [
         ThumbnailConcept(
-            concept_id="t1",
-            headline=script.title_working[:70],
-            subtext="What just dropped",
-            visual_description=_enrich(
-                f"High-contrast cinematic tech thumbnail base for '{t}', "
-                "subject dominant left/right third empty for huge text, dark navy, "
-                "cyan rim light, shocked energy, no text in image"
-            ),
-            text_overlay="SHOCKED EVERYONE",
-            emotion="shock",
-        ),
-        ThumbnailConcept(
-            concept_id="t2",
-            headline=t[:60],
-            subtext="The number that matters",
-            visual_description=_enrich(
-                f"Cinematic abstract glowing core / data sphere for '{t}', "
-                "black background, room for giant number overlay, no text in image"
-            ),
-            text_overlay="THE NUMBER",
-            emotion="urgency",
-        ),
-        ThumbnailConcept(
-            concept_id="t3",
-            headline="Why it matters",
-            subtext=t[:40],
-            visual_description=_enrich(
-                "Split energy thumbnail: chaos light left, clean tech right, "
-                "no logos no text in image"
-            ),
-            text_overlay="WHY IT MATTERS",
-            emotion="curiosity",
-        ),
-        ThumbnailConcept(
-            concept_id="t4",
-            headline="Explained",
-            subtext="Benchmarks & stakes",
-            visual_description=_enrich(
-                f"Photoreal hands + laptop dark room cyan light for '{t}' explainer, "
-                "monitor content blurred, no text no logos"
-            ),
-            text_overlay="EXPLAINED",
-            emotion="clarity",
-        ),
-        ThumbnailConcept(
-            concept_id="t5",
-            headline="What happens next",
-            subtext="Implications",
-            visual_description=_enrich(
-                "Futuristic city night aerial dual-tone cyan/magenta, race stakes, "
-                "no text no logos"
-            ),
-            text_overlay="WHAT'S NEXT",
-            emotion="authority",
-        ),
+            concept_id=t["concept_id"],
+            headline=t.get("headline") or script.title_working[:70],
+            subtext=t.get("subtext") or "",
+            visual_description=t.get("visual_description") or "",
+            text_overlay=t.get("text_overlay") or "EXPLAINED",
+            emotion=t.get("emotion") or "curiosity",
+        )
+        for t in thumb_raw
     ]
 
     package = VisualPackage(
@@ -456,11 +519,13 @@ def _build_competitive_package(
         "reference_url": "https://www.youtube.com/watch?v=MEw7TrAUEPQ",
         "trust_tactics": [
             "Kinetic stats with source footers",
+            "Real company logos captured from official assets",
+            "Real CEO/public-figure portraits when named in VO",
             "Real screenshots of reputable outlets (not AI fake newspapers)",
-            "Comparison cards for multi-phase legal/tech claims",
-            "No deepfake CEOs — titles only",
+            "Comparison cards for multi-phase claims",
         ],
         "subscriber_hooks": [
+            "Face + brand recognition in first 3 seconds",
             "Dense visual reward every few seconds",
             "Clear number takeaway worth sharing",
             "End screen next deep dive",
@@ -468,8 +533,9 @@ def _build_competitive_package(
         "avoid": style.get("banned_as_primary_visual")
         or [
             "Empty courtroom filler",
+            "Name-only cards when logo/portrait should appear",
+            "AI-invented faces without reference",
             "Random server rooms",
-            "Slow BBC stills with no motion plan",
         ],
     }
 
@@ -482,10 +548,13 @@ def _build_competitive_package(
         "on_screen_facts": facts,
         "motion_graphics": mg,
         "screen_captures": screens,
+        "identity_captures": identity,
+        "entities": entities,
         "retention_notes": [
+            "Show logos + real people photos — news authenticity",
             "Match peer energy: cut faster on hook than body",
-            "50%+ of timeline should be kinetic/UI/compare — not only B-roll stills",
-            "AI stills = cinematic metaphors; PROOF = real screenshots",
+            "Thumbnails: face OR product + 2–5 word CapCut text",
+            "AI stills = cinematic energy only; identity = captured assets",
             "CapCut does all typography",
         ],
         "generate_queue": list(dict.fromkeys(generate_queue))[:PRIORITY_GENERATE_CAP],
@@ -497,6 +566,7 @@ def _build_competitive_package(
         },
         "channel_visual_style": "peer_ai_revolution",
         "grounding_news_hits": grounding.get("news_hits") or [],
+        "thumbnail_system": (style.get("thumbnail_system") or {}),
     }
     return package, extras
 
@@ -536,6 +606,26 @@ def _markdown(package: VisualPackage, extras: dict[str, Any]) -> str:
             f"  URL hint: {s.get('url_hint') or 'search topic'}  \n"
             f"  Edit: {s.get('capcut')}"
         )
+
+    ident = extras.get("identity_captures") or {}
+    lines.append("\n## MUST-CAPTURE identity (logos + real people)\n")
+    lines.append(f"_{ident.get('policy', '')}_\n")
+    lines.append("### Logos\n")
+    for logo in ident.get("logo_captures") or []:
+        lines.append(
+            f"- **{logo.get('id')}** · {logo.get('company')}: `{logo.get('search_query')}`  \n"
+            f"  Use: {', '.join(logo.get('use_in') or [])}  \n"
+            f"  {logo.get('do_not')}"
+        )
+    lines.append("\n### People (real photos)\n")
+    for p in ident.get("person_captures") or []:
+        lines.append(
+            f"- **{p.get('name')}** — {p.get('role')}  \n"
+            f"  Search: `{p.get('search_query')}`  \n"
+            f"  {p.get('do_not')}"
+        )
+    for step in ident.get("capcut_identity_recipe") or []:
+        lines.append(f"- CapCut: {step}")
 
     lines.append("\n## Timeline shots\n")
     for s in package.shot_list:
@@ -670,6 +760,9 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
             "visuals/screen_captures.json", extras.get("screen_captures") or []
         )
         ctx.store.write_json(
+            "visuals/identity_captures.json", extras.get("identity_captures") or {}
+        )
+        ctx.store.write_json(
             "visuals/story_beats.json", extras.get("verified_story_beats") or []
         )
 
@@ -703,13 +796,24 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
                 f"[{q.get('shot_id')}|{q.get('kind')}]\n{q.get('prompt')}" for q in queue[:PRIORITY_GENERATE_CAP]
             ),
         )
+        ident = extras.get("identity_captures") or {}
         ctx.store.write_text(
             "visuals/CAPCUT_CHECKLIST.md",
             "\n".join(
                 [
-                    "# CapCut checklist (peer-competitive)",
+                    "# CapCut checklist (peer-competitive + real identity)",
                     "",
-                    "## 1. Screenshots (do first — this is proof)",
+                    "## 0. Capture logos + people FIRST (news authenticity)",
+                    *[
+                        f"- [ ] LOGO {x.get('company')}: search `{x.get('search_query')}`"
+                        for x in (ident.get("logo_captures") or [])
+                    ],
+                    *[
+                        f"- [ ] PHOTO {x.get('name')} ({x.get('role')}): `{x.get('search_query')}`"
+                        for x in (ident.get("person_captures") or [])
+                    ],
+                    "",
+                    "## 1. Screenshots (proof)",
                     *[
                         f"- [ ] {s.get('id')}: {s.get('action')}"
                         for s in (extras.get("screen_captures") or [])
@@ -721,8 +825,8 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
                         for m in (extras.get("motion_graphics") or [])
                     ],
                     "",
-                    "## 3. Drop cinematic stills under VO (3–5s hook cuts)",
-                    "## 4. Thumbnail text overlays last",
+                    "## 3. Cinematic stills under VO (3–5s hook cuts)",
+                    "## 4. Thumbnail: REAL face/logo + 2–5 word CapCut text",
                     "",
                 ]
             ),
