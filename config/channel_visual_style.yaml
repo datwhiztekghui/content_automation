@@ -1,0 +1,62 @@
+# Competitive visual DNA — peer bar: AI Revolution / high-retention faceless tech news
+# This is the product standard. Generic documentary filler is out of brand.
+
+channel_name: "Tech Frontier"
+peer_references:
+  - name: "AI Revolution–class faceless tech news"
+    example_url: "https://www.youtube.com/watch?v=MEw7TrAUEPQ"
+    traits:
+      - rapid visual change (every 2–5s on hooks; 4–7s mid-roll)
+      - kinetic typography for numbers and claims
+      - cinematic AI/tech B-roll (not empty offices)
+      - leaderboard / benchmark comparison cards
+      - product UI demos and screen captures of REAL sources
+      - geo maps when China / US / EU stakes appear
+      - logo stings + company cards (clean vector in CapCut, not AI mush)
+      - dark grade, cyan/magenta energy accents, high contrast thumbnails
+      - voice-forward: visuals serve the claim being spoken RIGHT NOW
+
+brand_grade:
+  background: "near-black / deep navy"
+  accent_primary: "electric cyan"
+  accent_secondary: "hot magenta / amber for warnings"
+  type: "bold geometric sans, massive numbers"
+  motion: "snap zooms, whip pans on stills, count-up numbers, glitch accents sparingly"
+
+# What wins subscribers on THIS niche
+must_have_asset_classes:
+  - kinetic_stat      # big number pops with source footer
+  - comparison_card   # Model A vs B / before vs after
+  - ui_screen         # real product / paper / court filing screenshots
+  - cinematic_broll   # AI-gen or stock, story-locked metaphor
+  - news_headline     # recreated clean lower-third of real outlet claim
+  - geo_map           # when geopolitics matter
+  - timeline          # release → reaction → implication
+  - logo_card         # company/org identity in vector
+  - proof_quote       # short on-screen quote + speaker role (not deepfake face)
+  - end_brand         # subscribe + next video package
+
+banned_as_primary_visual:
+  - empty courtrooms with no story graphics
+  - random server rooms disconnected from the claim
+  - generic phone scrolling as 40% of runtime
+  - soft “BBC documentary stills” that never show the product/news artifact
+  - AI-generated celebrity faces
+  - illegible mush logos
+
+# Free-tier generation policy
+free_tier:
+  stills: "Grok Imagine / local — cinematic tech, high energy, story-locked"
+  motion: "CapCut keyframes on stills + free templates; Kling/Runway only if available free"
+  text_and_charts: "ALWAYS CapCut / code graphics — never burn text into AI images"
+  real_proof: "Screenshot official blogs, arXiv PDFs, court PDFs, Reuters/BBC pages (fair use commentary)"
+
+# Hook (first 30s) visual recipe
+hook_recipe:
+  cut_interval_sec: [2, 4]
+  pattern:
+    - kinetic_stat_cold_open
+    - cinematic_shock_broll
+    - logo_or_geo_card
+    - kinetic_stat_reinforce
+    - ui_or_headline_proof

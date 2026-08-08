@@ -160,12 +160,17 @@ Dry-run writes narration text + marker plan without API spend.
 | **Inputs** | Final script + **research brief** + live news search |
 | **Outputs** | `VisualPackage` + `creative_strategy.json` + `story_beats.json` + Imagine queue → `visuals/` |
 
-**Credibility rules (non-negotiable):**
-- Every shot needs a `story_link` to the actual news/event — **no generic filler B-roll**
-- Ground in research + web hits; correct amounts/venues when reporting contradicts a thin brief
-- No deepfake faces of public figures; names via CapCut lower-thirds
-- No burned-in text/logos/watermarks in AI stills; facts/sources as editor overlays
-- Prefer news-archive search queries + photoreal documentary prompts for Grok Imagine / stock
+**Competitive bar:** AI Revolution–class faceless tech news  
+(ref style: dense cuts, kinetic numbers, cinematic tech B-roll, real screenshots —  
+see `config/channel_visual_style.yaml`).
+
+**Credibility + retention rules (non-negotiable):**
+- Mix asset classes: `kinetic_stat` · `comparison_card` · `ui_screen` · `cinematic_broll` · `logo_card` · `geo_map` · `timeline`
+- **Proof = real screenshots** of reputable sources (not AI-fake newspapers)
+- **Numbers = CapCut kinetic type** with source footers
+- Cinematic AI stills are *metaphors* locked to the claim being spoken — not empty rooms
+- No deepfake public figures; no burned-in AI text/logos/watermarks
+- Hook cuts ~2–4s; body ~4–7s — peer energy, not slow documentary
 
 ---
 
