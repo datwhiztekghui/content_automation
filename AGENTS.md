@@ -108,13 +108,16 @@ Modes:
 |--|--|
 | **Package** | `agents/scriptwriter` |
 | **Stage** | `scriptwriter` |
-| **Goal** | High-retention 12–16 minute script in channel voice |
+| **Goal** | High-retention **complete** 12–16 minute script in channel voice (FT-style curiosity prose, spoken) |
 | **Inputs** | `ResearchBrief` + channel style |
-| **Outputs** | `VideoScript` → `script/draft.json` + `.md` + `narration.txt` |
+| **Outputs** | `VideoScript` → `script/draft.json` + `.md` + `narration.txt` + `quality.json` |
 
 **Must include:** timestamps, visual cues, on-screen text, source callouts, soft CTA.
 
-**Word target:** ~1,800–2,400 words (~150 wpm).
+**Word target:** ~1,800–2,400 words (~150 wpm). Floor ~1,400 words.
+
+**Completeness guards:** per-section LLM retries, min-words floors, no empty JSON stubs,
+expanded brief fallback when weak (never silent one-sentence sections).
 
 ---
 
@@ -156,21 +159,25 @@ Dry-run writes narration text + marker plan without API spend.
 |--|--|
 | **Package** | `agents/visual_director` |
 | **Stage** | `visual_director` |
-| **Goal** | **News-grounded** creative direction: story-linked shots, proof cards, brand-trust visuals, thumbnails |
+| **Goal** | **Virtual News Studio** creative direction: Chloe + floating glass panels, story-linked shots, proof cards, identity captures, thumbnails |
 | **Inputs** | Final script + **research brief** + live news search |
-| **Outputs** | `VisualPackage` + `creative_strategy.json` + `story_beats.json` + Imagine queue → `visuals/` |
+| **Outputs** | `VisualPackage` + `creative_strategy.json` + `story_beats.json` + `studio_layout.json` + Imagine queue → `visuals/` |
+| **Modules** | `agent.py`, `peer_style.py`, `identity_assets.py`, `studio_layout.py` |
 
-**Competitive bar:** AI Revolution–class tech news  
-(ref: dense cuts, kinetic numbers, logos, real people, product UI —  
+**Format bar:** Virtual News Studio (sports-pundit desk energy) + AI Revolution density  
+(ref: continuous anchor **Chloe**, glass panels for data, real logos/people, kinetic type —  
 see `config/channel_visual_style.yaml`).
 
 **Credibility + retention rules (non-negotiable):**
-- Mix: `kinetic_stat` · `logo_card` · `person_plate` · `ui_screen` · `cinematic_broll` · `comparison_card` · `geo_map` · `timeline`
-- **Companies → logos ON the image** where the story is about that company (sharp brand mark / holographic sign)
-- **Burned-in titles** for the main claim on hero frames (peer style); CapCut for extra captions
-- **CEOs / public figures → REAL photos** when they drive the news (capture / reference-first — never invent faces)
-- **Proof screenshots** of real articles/product pages
-- **Thumbnails:** hero (robot/CEO/product) + logo + 2–6 word mega text
+- Mix: `kinetic_stat` · `logo_card` · `person_plate` · `ui_screen` · `cinematic_broll` · `comparison_card` · `geo_map` · `timeline` · `proof_quote`
+- **Chloe always present** on generative hero frames; story content lives on **floating glass panels**
+- **Companies → logos ON glass panels** (capture official assets — never invent marks)
+- **Burned-in claim titles** on glass (2–6 words); CapCut for extra captions
+- **CEOs / public figures → REAL photos** on glass when they drive the news (never invent faces)
+- **Proof screenshots** as black-on-black cards with **outlet source chips** on glass
+- **Video feeds** (demos/robots/UI) stay inside panels — studio shell remains
+- **Channel badge:** Tech Frontier upper-right — never SCENIUM or third-party marks
+- **Thumbnails:** Chloe + giant glass panel (real face/logo/product) + 2–6 word mega text
 - **Only ban AI watermarks** (Gemini/Grok/Midjourney stamps) — not logos or titles
 - Hook cuts ~2–4s; body ~4–7s
 - Gemini handoff: `scripts/build_gemini_prompts.py` → `visuals/GEMINI_PROMPTS.md`

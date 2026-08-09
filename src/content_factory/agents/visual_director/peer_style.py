@@ -1,8 +1,12 @@
-"""AI Revolution–class visual language — cinematic CGI with logos + burned titles.
+"""Virtual Studio visual language — broadcast anchor with floating glass panels.
 
-Reference look: humanoid AI/robot in server hall, holographic UI, company brand
-signage, GIGANTIC claim text (e.g. ByteDance / 10 TRILLION PARAMETERS).
-Only ban AI-generator watermarks — logos and titles are required where they matter.
+Reference look: football / sports-pundit virtual newsroom. Female anchor **Chloe**
+stands center, controlling transparent holographic glass screens via a glass tablet.
+Real logos, portraits, stats, and quotes live ON those panels — not as free-floating
+CGI mush or empty documentary B-roll.
+
+Channel badge: **Tech Frontier** (never SCENIUM or third-party watermarks).
+Only ban AI-generator watermarks — logos and claim titles are required.
 """
 
 from __future__ import annotations
@@ -16,13 +20,19 @@ from config.settings import PROJECT_ROOT
 
 STYLE_PATH = PROJECT_ROOT / "config" / "channel_visual_style.yaml"
 
+# Permanent identity lock for every generative still
 STYLE_LOCK = (
-    "Ultra-detailed cinematic 3D CGI, Unreal Engine 5 quality, volumetric blue and cyan "
-    "light, reflective materials, dense server racks with multicolored cable rainbows and "
-    "LED status lights, floating holographic HUD with neural network graphs, dramatic rim "
-    "lighting, shallow depth of field, YouTube 16:9, premium AI news commercial aesthetic. "
-    "NO AI generator watermark, NO stock photo watermark, NO blurry mush logos."
+    "Ultra-detailed cinematic photorealism, futuristic virtual newsroom studio. "
+    "Consistent female anchor Chloe: shoulder-length pink-blonde hair, white t-shirt, "
+    "dark jeans, professional broadcast presence, perfect facial consistency across shots. "
+    "She stands center holding a transparent glass tablet used to control the environment. "
+    "Background: massive glowing cyan tech globe, digital matrix walls, curved teal sofa. "
+    "Floating transparent glass panels surround her displaying data, portraits, logos, and quotes. "
+    "Upper-right corner: Tech Frontier channel logo badge (not SCENIUM). "
+    "8k broadcast quality, YouTube 16:9. NO AI generator watermark, NO stock watermark."
 )
+
+CHANNEL_BADGE = "Tech Frontier"
 
 
 def load_visual_style() -> dict[str, Any]:
@@ -37,66 +47,81 @@ def style_lock() -> str:
 
 
 def title_block(main: str, sub: str = "") -> str:
-    """Instruction for burned-in typography like the ByteDance reference."""
+    """Typography burned into a floating transparent glass panel."""
     main = main.strip().upper()
     sub = sub.strip().upper()
     if sub:
         return (
-            f"Large bold sans-serif 3D/neon typography on the right or lower-right third: "
-            f'primary line "{main}" in bright white-to-amber gradient, secondary line '
-            f'"{sub}" in clean white, crisp edges, highly readable at small size, '
-            f"perfect kerning, no spelling errors."
+            f"Inside a floating transparent glass panel: primary line '{main}' in bright "
+            f"cyan/amber, secondary line '{sub}' in clean white, highly readable, sharp edges."
         )
     return (
-        f"Large bold sans-serif 3D/neon typography: \"{main}\" in bright white-to-amber "
-        f"gradient, crisp, highly readable, no spelling errors."
+        f"Inside a floating transparent glass panel: '{main}' in glowing cyan/amber text, "
+        f"highly readable, sharp edges."
     )
 
 
 def logo_block(company: str, local_script: str = "") -> str:
-    """On-image brand presence."""
-    extra = f" Also include sharp {local_script} lettering on a holographic sign." if local_script else ""
+    """On-image brand presence on a glass panel (not free-floating mush)."""
+    extra = (
+        f" Also show sharp '{local_script}' lettering on a holographic glass chip."
+        if local_script
+        else ""
+    )
     return (
-        f"Clearly visible, sharp, correct-looking {company} logo and brand mark in-frame "
-        f"(holographic sign, wall badge, or HUD corner) — official colors, not abstract mush."
+        f"A sharp, official-looking {company} logo displayed clearly on a floating "
+        f"transparent glass screen behind or beside the anchor."
         f"{extra}"
     )
 
 
-def hero_robot(action: str) -> str:
+def anchor_chloe(action: str) -> str:
     return (
-        f"Sleek white-and-black humanoid robot with glowing cyan eye sensors, "
-        f"{action}, photoreal CGI materials, premium sci-fi product hero."
+        f"Female anchor Chloe (pink-blonde hair, white shirt, dark jeans) holding a "
+        f"transparent tablet, {action}, in a premium virtual newsroom with teal sofa "
+        f"and glowing cyan globe background."
     )
 
 
-# Story-agnostic cinematic library (always logo+title ready via wrappers)
+def hero_robot(action: str) -> str:
+    """Legacy helper: robot content appears as a *panel feed*, not a full-frame CGI hero."""
+    return (
+        f"On a large floating glass panel beside Chloe: sleek white-and-black humanoid robot "
+        f"with cyan eye sensors, {action}, photoreal CGI feed framed in holographic borders."
+    )
+
+
+# Story-agnostic cinematic library — always Chloe + glass panels
 CINEMATIC_LIBRARY: dict[str, list[str]] = {
     "ai_model": [
-        "Humanoid robot in dense blue server hall holding a holographic neural tablet",
-        "Robot silhouette before towering GPU racks with volumetric cyan god rays",
-        "Close hero robot face reflecting server LEDs, holographic brain graph floating",
-        "Dual-world energy: robot between warm Silicon Valley night and neon Asia skyline",
+        "Chloe expanding a floating holographic glass panel showing a massive neural network diagram",
+        "Chloe gesturing toward a floating screen of glowing server racks and AI processing chips",
+        "Chloe reading a semi-transparent panel comparing two glowing model-size data charts",
+        "Chloe swiping her tablet as a giant glass panel reveals a parameter-count explosion of light",
     ],
     "coding_agent": [
-        "Humanoid robot at a multi-monitor coding fortress, holographic code panes",
-        "Robot pointing into a translucent monorepo tree hologram of glowing nodes",
-        "Agent robot walking a corridor of server cages pulling a light-thread of code",
-        "Robot and floating IDE hologram over a dark glass floor reflecting LEDs",
+        "Chloe swiping her glass tablet, bringing up a glowing transparent window of cascading source code",
+        "Chloe beside a floating glass panel showing a repository file tree connecting in real time",
+        "Chloe pointing her tablet at a monorepo hologram of millions of glowing file nodes",
+        "Chloe presenting a dual-panel IDE feed: search results left, generated code right",
     ],
     "china_tech": [
-        "Robot under a glowing Chinese mega-city tech brand hologram in a server cathedral",
-        "Cinematic server hall with neon Chinese corporate signage and holographic dashboards",
-        "Humanoid AI inspecting a holographic tablet labeled with the company product name",
+        "Chloe in the virtual studio, a massive transparent panel displaying Asian tech market graphs and neon city data",
+        "Chloe gesturing to a floating screen of international user-growth metrics over a globe",
+        "Chloe presenting a glass panel with ByteDance / TikTok-scale infrastructure holograms",
     ],
     "legal_meta": [
-        "Robot holding scales-of-justice hologram inside a blue-lit data center (tech-law hybrid)",
-        "Server hall with Meta-style brand hologram and bold penalty-claim typography space",
-        "Robot facing a wall of social-app color light (no illegible mush) plus brand logo badge",
+        "Chloe holding her tablet while a floating glass panel shows scales-of-justice over tech branding",
+        "Chloe looking at a transparent screen with a legal document snapshot in glowing borders",
+        "Chloe presenting dual glass panels: company logo left, court/AG portrait right",
     ],
     "money_stakes": [
-        "Robot presenting a holographic coin-stack and chart explosion of light (no tiny unreadable digits except the main title)",
-        "Vault-like server cage doors open, robot stepping out with glowing contract hologram",
+        "Chloe in the studio, floating glass panels surging with financial charts and currency metrics",
+        "Chloe tapping her tablet as a glass panel slams a giant penalty or valuation number into view",
+    ],
+    "robotics": [
+        "Chloe presenting a glass panel video feed of a humanoid robot walking a factory floor",
+        "Chloe beside a floating panel showing robot hands assembling a precision component",
     ],
 }
 
@@ -107,15 +132,18 @@ def cinematic_for_topic(topic: str) -> list[str]:
     if any(k in t for k in ("muse", "codebase", "coding", "agent", "copilot", "devtools")):
         out.extend(CINEMATIC_LIBRARY["coding_agent"])
         out.extend(CINEMATIC_LIBRARY["ai_model"])
-    if any(k in t for k in ("ai", "model", "parameter", "llm", "gpt", "qwen", "kimi")):
+    if any(k in t for k in ("ai", "model", "parameter", "llm", "gpt", "qwen", "kimi", "trillion")):
         out.extend(CINEMATIC_LIBRARY["ai_model"])
         out.extend(CINEMATIC_LIBRARY["china_tech"])
     if any(k in t for k in ("meta", "facebook", "instagram", "nuisance", "court", "ruling")):
         out.extend(CINEMATIC_LIBRARY["legal_meta"])
         out.extend(CINEMATIC_LIBRARY["money_stakes"])
         out.extend(CINEMATIC_LIBRARY["coding_agent"])
-    if any(k in t for k in ("bytedance", "byte-dance", "tiktok", "douyin")):
+    if any(k in t for k in ("bytedance", "byte-dance", "tiktok", "douyin", "seedance")):
         out.extend(CINEMATIC_LIBRARY["china_tech"])
+        out.extend(CINEMATIC_LIBRARY["ai_model"])
+    if any(k in t for k in ("robot", "humanoid", "tesla bot", "optimus", "figure ai")):
+        out.extend(CINEMATIC_LIBRARY["robotics"])
         out.extend(CINEMATIC_LIBRARY["ai_model"])
     if not out:
         out = CINEMATIC_LIBRARY["ai_model"] + CINEMATIC_LIBRARY["coding_agent"]
@@ -131,18 +159,24 @@ def build_gemini_prompt(
     logo_local: str = "",
     extra: str = "",
 ) -> str:
-    """Full Gemini/Imagine prompt matching the ByteDance reference aesthetic."""
+    """Full Imagine/Gemini prompt: Chloe studio shell + claim panels + logo."""
+    # If scene already describes Chloe, don't double-wrap; else frame as studio action
+    scene_l = scene.lower()
+    if "chloe" in scene_l:
+        framed = scene.rstrip(".") + "."
+    else:
+        framed = (
+            f"{anchor_chloe('presenting the story on floating glass panels')}. "
+            f"Primary glass panel content: {scene.rstrip('.')}. "
+        )
     parts = [
-        scene.rstrip(".") + ".",
-        hero_robot("standing in three-quarter view, interacting with a holographic interface")
-        if "robot" not in scene.lower()
-        else "",
+        framed,
         logo_block(company, logo_local),
         title_block(main_title, sub_title),
         extra,
         STYLE_LOCK,
-        "Composition: subject on one side, giant typography dominating the opposite side, "
-        "holographic brand sign upper area, rich server-room depth, Instagram/YouTube thumbnail punch.",
+        "Composition: Chloe center or center-left; giant glass panel with typography and brand "
+        "on the opposite side; Tech Frontier badge top-right; rich studio depth.",
     ]
     return " ".join(p for p in parts if p)
 
@@ -157,14 +191,14 @@ def motion_graphic_recipes(facts: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "on_screen_text": f.get("fact", "")[:100],
                 "source_footer": f.get("source", "Source"),
                 "capcut_steps": [
-                    "Full-bleed dark navy / server blue background",
-                    "Number or claim in 120–160pt bold white/amber",
-                    "Company logo chip top-left",
-                    "Count-up or slam-in animation 0.4s",
-                    "Source footer 18pt bottom-left",
-                    "Hold 2.5–4s then whip to next",
+                    "Background plate: Chloe in the virtual studio",
+                    "Composite a floating transparent glass panel effect",
+                    "Place text inside the glass panel: bold white/cyan",
+                    "Add company logo chip to the top of the glass frame",
+                    "Source footer 18pt bottom-left of the glass frame",
+                    "Animate glass panel sliding in (0.4s) while Chloe interacts with tablet",
                 ],
-                "audio_hit": "whoosh + soft impact",
+                "audio_hit": "hologram whoosh + soft glass chime",
                 "when": f.get("when") or f.get("beat") or "hook",
             }
         )
@@ -174,8 +208,9 @@ def motion_graphic_recipes(facts: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "type": "comparison_card",
             "on_screen_text": "Before vs After / Model A vs B",
             "capcut_steps": [
-                "Two panels 50/50 with logos of each side if companies differ",
-                "Big numbers; cyan vs amber accents",
+                "Generate two floating transparent glass panels flanking Chloe",
+                "Place logos of each side into respective panels",
+                "Big numbers glowing on glass; cyan vs amber accents",
             ],
             "when": "benchmarks_demos",
         }
@@ -188,24 +223,27 @@ def screen_capture_plan(topic: str, news_hits: list[dict[str, Any]]) -> list[dic
         {
             "id": "sc_primary_article",
             "type": "ui_screen",
-            "action": "Screenshot top reputable article — crop ads, keep outlet masthead visible",
+            "action": (
+                "Screenshot top reputable article — composite into a floating transparent "
+                "glass panel next to Chloe (prefer black-on-black article layout with source chip)"
+            ),
             "url_hint": (news_hits[0].get("url") if news_hits else ""),
-            "capcut": "Ken Burns + red highlight box on key sentence",
+            "capcut": "Panel drifts slightly; red highlight box tracks on key sentence",
             "priority": 1,
         },
         {
             "id": "sc_second_source",
             "type": "ui_screen",
-            "action": "Second independent outlet confirming the claim",
+            "action": "Second independent outlet confirming the claim — dual glass panels",
             "url_hint": (news_hits[1].get("url") if len(news_hits) > 1 else ""),
-            "capcut": "Side-by-side trust layout",
+            "capcut": "Two glass panels flanking Chloe; trust layout",
             "priority": 1,
         },
         {
             "id": "sc_official",
             "type": "ui_screen",
             "action": f"Official product/company page for: {topic[:80]}",
-            "capcut": "Zoom on product name + date",
+            "capcut": "Glass panel scales up as Chloe points with tablet",
             "priority": 1,
         },
     ]

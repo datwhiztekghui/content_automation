@@ -1,53 +1,72 @@
-# Competitive visual DNA — peer bar: AI Revolution / high-retention tech news
-# Reference look: cinematic 3D CGI hero (robot/AI), server halls, holograms,
-# BOLD burned-in titles + company branding (ByteDance-style). Only ban AI watermarks.
+# Virtual News Studio DNA — peer bar: sports-pundit broadcast + tech news density
+# Anchor: Chloe + floating glass panels. Channel badge: Tech Frontier.
+# Real logos / portraits / proof screenshots live ON glass. Only ban AI watermarks.
 
 channel_name: "Tech Frontier"
+visual_format: "virtual_news_studio"
+anchor:
+  name: "Chloe"
+  look: "shoulder-length pink-blonde hair, white t-shirt, dark jeans"
+  prop: "transparent glass tablet (always in hand)"
+  presence: "center frame on generative hero stills; continuous parasocial host"
+
 peer_references:
-  - name: "AI Revolution–class tech news"
+  - name: "Virtual studio / football pundit desk energy"
+    traits:
+      - continuous human anchor (Chloe)
+      - floating transparent glass data panels
+      - tablet-controlled screen transitions
+      - kinetic numbers and comparison energy
+  - name: "AI Revolution–class tech news density"
     example_url: "https://www.youtube.com/watch?v=MEw7TrAUEPQ"
     traits:
       - rapid visual change (every 2–5s on hooks; 4–7s mid-roll)
-      - cinematic 3D CGI / premium AI-commercial look (robot, holograms, data centers)
       - company logos ON the image when the story is about that company
-      - bold burned-in headline text for the one claim of the shot
+      - bold claim text for the one claim of the shot
       - CEO / public-figure photos when they drive the news
-      - kinetic numbers and comparison energy
-      - dark blue cyan grade, high contrast thumbnails
+  - name: "ByteDance-scale commercial CGI (as panel FEEDS)"
+    traits:
+      - robot / model-scale hero content can appear INSIDE glass video feeds
+      - giant claim titles (e.g. 10 TRILLION PARAMETERS) on glass panels
+      - never orphan full-frame CGI that loses the studio shell
 
 brand_grade:
-  background: "near-black / deep navy / server-room blue"
-  accent_primary: "electric cyan / neon blue"
-  accent_secondary: "amber / hot white for main title"
-  type: "massive bold sans, 2–6 words primary claim, smaller subline"
-  motion: "snap zooms, hologram flickers, light streaks"
+  background: "virtual newsroom — cyan globe, matrix walls, teal sofa, near-black depth"
+  accent_primary: "electric cyan / holographic white"
+  accent_secondary: "amber / hot white for main claim on glass"
+  type: "bold geometric sans on glass panels, 2–6 words primary claim"
+  motion: "panel slide-in 0.4s, tablet swipe transitions, soft glass chime"
+  channel_badge: "Tech Frontier upper-right (never SCENIUM)"
 
 # Image generation prompt law (Grok Imagine / Gemini / Midjourney)
 image_prompt_rules:
   must_include_when_relevant:
-    - company logo or brand signage (Meta, OpenAI, ByteDance, NVIDIA, etc.)
-    - bold English on-image title for the shot’s main claim
-    - optional Chinese/local brand lettering if that market is the story
-    - holographic UI / neural graphs / robot or agent hero when fitting
+    - Chloe in the virtual studio (consistent face, white shirt, dark jeans, glass tablet)
+    - floating transparent glass panels with story content
+    - company logo on glass when the story is about that company
+    - bold English on-panel title for the shot’s main claim
+    - Tech Frontier channel badge upper-right
   must_exclude:
     - AI generator watermarks (Midjourney/Gemini/Grok stamp, stock watermark)
+    - SCENIUM or third-party channel marks
     - muddy unreadable logo approximations (prefer sharp official-looking mark)
+    - invented photoreal faces for real public figures without a real reference
   style_lock: |
-    Ultra-detailed cinematic 3D CGI, Unreal Engine 5 look, volumetric blue light,
-    reflective chrome and matte white robot surfaces when a humanoid is used,
-    dense server racks with RGB LEDs and cable rainbows, floating holographic
-    panels with neural network diagrams, dramatic rim light, shallow DOF,
-    YouTube 16:9 thumbnail-ready composition, left or right hero, opposite side
-    for giant typography. Photoreal materials, not flat cartoon.
+    Ultra-detailed cinematic photorealism, futuristic virtual newsroom.
+    Female anchor Chloe (pink-blonde hair, white t-shirt, dark jeans) center,
+    transparent glass tablet in hands, curved teal sofa, massive glowing cyan
+    tech globe, digital matrix walls, floating transparent glass panels for
+    data/portraits/quotes. Tech Frontier badge top-right. YouTube 16:9.
+    NO AI generator watermark. Perfect facial consistency.
 
 thumbnail_system:
-  formula: "HERO (robot/CEO/product) + LOGO + 2–6 WORD MEGA TEXT + high contrast"
+  formula: "CHLOE + GIANT GLASS PANEL (REAL face/logo/product) + 2–6 WORD MEGA TEXT"
   rules:
-    - Giant title readable at phone size
-    - Company logo clearly visible
+    - Giant title readable at phone size (on or over the glass panel)
+    - Company logo clearly visible on glass
     - One primary claim only
-    - Dark tech background, cyan/amber accents
-    - Face or robot looking toward text block when possible
+    - Studio cyan/teal grade, high contrast
+    - Chloe pointing or gesturing toward the hero panel
 
 must_have_asset_classes:
   - kinetic_stat
@@ -64,34 +83,56 @@ must_have_asset_classes:
 
 identity_and_brands:
   policy: |
-    Product/company news must SHOW logos and relevant public figures.
-    Logos and burned-in claim text belong ON key frames (thumb + cold open +
-    major beats). Only AI-service watermarks are forbidden.
+    Product/company news must SHOW logos and relevant public figures on Chloe's
+    floating glass panels. Logos and burned-in claim text belong ON key frames
+    (thumb + cold open + major beats). Only AI-service watermarks are forbidden.
   logo_sources:
     - official press kit / brand resources
-    - sharp on-image logo in CGI shots
+    - sharp logo on glass panel in studio stills
     - newsroom assets
   person_photo_sources:
     - official portraits / news stills
     - reference-first edits from real photos
+  panel_mapping:
+    logos: "floating glass panel behind or beside Chloe"
+    portraits: "glass-framed plate next to Chloe"
+    articles: "black-on-black card + outlet source chip on glass"
+    video_feeds: "large glass panel (demos, robots, UI) — studio shell remains"
+
+article_layout:
+  name: black_on_black_source_card
+  background: near-black with cyan edge glow
+  source_chip: rounded pill with outlet name
+  do_not:
+    - full-bleed white newsprint with unreadable body text
+    - AI-invented fake newspaper mastheads
 
 banned_as_primary_visual:
   - empty rooms with no story graphics
   - soft documentary stills with zero type or brand
-  - name-only cards when logo/face should appear
+  - name-only cards when logo/face should appear on glass
+  - orphan full-frame CGI that removes Chloe and the studio shell
+  - SCENIUM or third-party marks
   - AI generator watermarks
 
 free_tier:
-  stills: "Gemini / Grok Imagine / equivalent — cinematic CGI style lock"
-  identity: "Capture real portraits + render sharp logos in-frame"
-  text_on_image: "Burn main claim text into hero frames; CapCut for extra captions"
-  real_proof: "Screenshot official pages when numbers need source credibility"
+  stills: "Gemini / Grok Imagine — Virtual Studio style lock (Chloe + glass)"
+  identity: "Capture real portraits + logos; composite onto glass in CapCut"
+  text_on_image: "Burn main claim into glass panels; CapCut for extra captions"
+  real_proof: "Screenshot official pages; black-on-black card + source chip"
 
 hook_recipe:
   cut_interval_sec: [2, 4]
   pattern:
-    - mega_title_logo_hero
-    - logo_card_or_ceo_portrait
-    - cinematic_cgi_broll
-    - product_ui_or_hologram
+    - kinetic_stat_on_glass
+    - logo_card_or_ceo_on_glass
+    - chloe_panel_feed_cinematic
+    - ui_screen_or_proof_on_glass
     - kinetic_stat_reinforce
+
+spatial_rules:
+  - Chloe center or center-left; glass panels carry story content
+  - Max 1–2 primary panels in focus per shot
+  - Video feeds stay inside panels; do not lose studio shell
+  - Tech Frontier badge every generative still
+  - Hook 2–4s cuts; body 4–7s

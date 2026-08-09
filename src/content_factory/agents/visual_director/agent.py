@@ -1,10 +1,11 @@
-"""Visual Director — AI Revolution–class competitive package.
+"""Visual Director — Virtual News Studio (Chloe + floating glass panels).
 
-Peer bar (e.g. https://www.youtube.com/watch?v=MEw7TrAUEPQ):
-kinetic stats, rapid cuts, cinematic tech B-roll, real screenshots, comparison
-cards, geo stakes — NOT generic empty-room stock.
+Peer bar: dynamic virtual broadcast studio. Continuous anchor presence (Chloe)
+using a transparent tablet to control floating holographic glass panels that
+display kinetic stats, real screenshots, CEO portraits, and verified quotes.
 
 Credibility still required: story-linked beats, real numbers, real sources.
+Only ban AI-generator watermarks — logos and claim titles are required.
 """
 
 from __future__ import annotations
@@ -20,10 +21,17 @@ from content_factory.agents.visual_director.identity_assets import (
     thumbnail_concepts_with_identity,
 )
 from content_factory.agents.visual_director.peer_style import (
+    STYLE_LOCK,
     cinematic_for_topic,
     load_visual_style,
     motion_graphic_recipes,
     screen_capture_plan,
+)
+from content_factory.agents.visual_director.studio_layout import (
+    article_card_prompt,
+    panel_for_asset,
+    studio_layout_manifest,
+    studio_prompt_suffix,
 )
 from content_factory.models.schemas import (
     ResearchBrief,
@@ -38,34 +46,28 @@ from content_factory.utils.logging import get_logger
 
 log = get_logger(__name__)
 
-# Peer channels cut HARD on the hook
 HOOK_SHOT_SECONDS = 3.0
 BODY_SHOT_SECONDS = 5.0
 PRIORITY_GENERATE_CAP = 32
 
-PHOTOREAL_SUFFIX = (
-    "Ultra-detailed cinematic 3D CGI, Unreal Engine 5 look, volumetric blue/cyan light, "
-    "server racks, holographic HUDs, bold burned-in claim typography when specified, "
-    "sharp company logo in-frame when specified, YouTube 16:9, "
-    "NO AI generator watermark, NO stock watermark."
-)
+PHOTOREAL_SUFFIX = STYLE_LOCK
 
-SYSTEM = """You are the Creative Director for Tech Frontier — competing with
-AI Revolution–class tech/AI news channels (high energy, dense motion design).
+SYSTEM = """You are the Creative Director for Tech Frontier — Virtual News Studio format.
 
-VISUAL LANGUAGE (ByteDance / AI Revolution commercial CGI):
-- Humanoid robot or product hero in server halls, holograms, cyan volumetric light
-- REAL company logos ON key frames (sharp, official-looking)
-- BOLD burned-in English titles for the shot claim (2–6 words) — like “10 TRILLION PARAMETERS”
-- REAL CEO/public-figure photos when they drive the story (capture or reference-first)
-- Real screenshots for proof beats
-- Thumbnails: hero + logo + giant text
-- Cut every 2–5s on hook, 4–7s mid-roll
-- ONLY ban AI-generator watermarks — logos and titles are REQUIRED where they matter
+VISUAL LANGUAGE (Virtual Studio / sports-pundit style):
+- Single consistent anchor: Chloe (pink-blonde hair, white shirt, dark jeans) is always on screen.
+- Set: curved teal sofa, giant glowing tech globe, Tech Frontier logo top-right (never SCENIUM).
+- Interaction: Chloe ALWAYS holds a transparent glass tablet to control screens behind her.
+- Information: ALL data (stats, logos, UI, quotes) appear on floating transparent glass panels.
+- REAL company logos and CEO/public-figure photos appear IN THESE PANELS when they drive the story.
+- Published quotes are framed inside transparent glass panels (black-on-black + source chip).
+- Video feeds (demos, robots, UI) live inside glass panels — studio shell stays visible.
+- Thumbnails: Chloe standing next to a massive floating panel with giant text.
+- ONLY ban AI-generator watermarks — logos and titles are REQUIRED where they matter.
 
 IDENTITY LAW:
-- Product news must SHOW the brand mark and relevant people, not name-only plates
-- Portraits: official/news capture; reference-first AI only — never invent a face from nothing
+- Product news must SHOW the brand mark and relevant people on the floating screens.
+- Portraits: official/news capture; never invent a face from nothing.
 
 Return JSON with keys:
 creative_strategy, verified_story_beats, shot_list, broll_prompts,
@@ -100,12 +102,16 @@ def _section_duration_sec(sec: Any) -> float:
     return max(words / 150.0 * 60.0, 12.0)
 
 
-def _enrich(prompt: str) -> str:
+def _enrich(prompt: str, asset_class: str = "cinematic_broll") -> str:
     p = (prompt or "").strip()
     if not p:
         return PHOTOREAL_SUFFIX
-    if "watermark" not in p.lower():
+    if "watermark" not in p.lower() and "chloe" not in p.lower():
         p = f"{p.rstrip('.')}. {PHOTOREAL_SUFFIX}"
+    elif "watermark" not in p.lower():
+        p = f"{p.rstrip('.')}. NO AI generator watermark."
+    if "tech frontier" not in p.lower() and "glass panel" in p.lower():
+        p = f"{p} {studio_prompt_suffix(asset_class)}"
     return p
 
 
@@ -140,8 +146,7 @@ def _facts_from_grounding(grounding: dict[str, Any], topic: str) -> list[dict[st
     facts: list[dict[str, Any]] = []
     for c in grounding.get("brief_claims") or []:
         facts.append({"fact": c, "source": "research brief", "when": "body"})
-    # Meta NM pack if relevant
-    blob = f"{topic} {grounding.get('brief_overview','')}".lower()
+    blob = f"{topic} {grounding.get('brief_overview', '')}".lower()
     if "meta" in blob or "nuisance" in blob or "567" in blob or "new mexico" in blob:
         facts = [
             {
@@ -180,6 +185,29 @@ def _facts_from_grounding(grounding: dict[str, Any], topic: str) -> list[dict[st
                 "when": "proof_quote",
             },
         ]
+    # ByteDance / 10T gold-standard demo facts when topic matches
+    if any(
+        k in blob
+        for k in ("bytedance", "byte dance", "10 trillion", "10t", "seedance", "douyin")
+    ):
+        if not any("trillion" in (f.get("fact") or "").lower() for f in facts):
+            facts = [
+                {
+                    "fact": "10 TRILLION PARAMETERS — scale claim in the story",
+                    "source": "topic / research brief",
+                    "when": "hook",
+                },
+                {
+                    "fact": "ByteDance / China-scale foundation model race",
+                    "source": "research brief",
+                    "when": "why_it_matters",
+                },
+                {
+                    "fact": "Compare context, training data, and open vs closed access",
+                    "source": "research brief",
+                    "when": "benchmarks_demos",
+                },
+            ] + facts
     if not facts:
         facts.append(
             {
@@ -210,6 +238,7 @@ def _build_competitive_package(
     cinematics = cinematic_for_topic(script.topic_title)
     mg = motion_graphic_recipes(facts)
     screens = screen_capture_plan(script.topic_title, grounding.get("news_hits") or [])
+    layout = studio_layout_manifest()
 
     shots: list[dict[str, Any]] = []
     broll: list[dict[str, Any]] = []
@@ -223,21 +252,22 @@ def _build_competitive_package(
     logo_i = 0
     people_list = identity.get("person_captures") or []
     logo_list = identity.get("logo_captures") or []
+    primary_company = (entities[0]["company"] if entities else "") or ""
 
-    # Peer rhythm: proof + identity often, cinematic energy between
+    # Rhythm: proof + identity on glass, cinematic panel feeds between
     rhythm = [
         "kinetic_stat",
         "logo_card",
         "cinematic_broll",
         "person_plate",
+        "proof_quote",
         "ui_screen",
         "kinetic_stat",
-        "cinematic_broll",
         "comparison_card",
         "logo_card",
-        "person_plate",
-        "news_headline",
         "cinematic_broll",
+        "news_headline",
+        "person_plate",
     ]
 
     for sec in script.sections:
@@ -262,7 +292,12 @@ def _build_competitive_package(
                 asset_class = "person_plate"
 
             fact = facts[fact_i % len(facts)]
-            if asset_class in {"kinetic_stat", "news_headline", "proof_quote", "comparison_card"}:
+            if asset_class in {
+                "kinetic_stat",
+                "news_headline",
+                "proof_quote",
+                "comparison_card",
+            }:
                 fact_i += 1
 
             person = people_list[person_i % len(people_list)] if people_list else None
@@ -284,21 +319,27 @@ def _build_competitive_package(
                 else 2
             )
 
+            panel = panel_for_asset(asset_class)
             story_link = (
-                f"VO section '{sec.title}' · claim support: {fact.get('fact','')[:100]}"
+                f"VO section '{sec.title}' · claim support: {fact.get('fact', '')[:100]}"
             )
             if asset_class == "person_plate" and person:
                 story_link = (
-                    f"Show REAL photo of {person.get('name')} ({person.get('role')}) — "
-                    f"not a name-only card"
+                    f"Show REAL photo of {person.get('name')} ({person.get('role')}) "
+                    f"on floating glass panel"
                 )
             if asset_class == "logo_card" and logo:
                 story_link = (
-                    f"Show REAL {logo.get('company')} logo on screen — brand recognition"
+                    f"Show REAL {logo.get('company')} logo on floating glass panel"
                 )
 
             overlay = ""
-            if asset_class in {"kinetic_stat", "news_headline", "comparison_card", "proof_quote"}:
+            if asset_class in {
+                "kinetic_stat",
+                "news_headline",
+                "comparison_card",
+                "proof_quote",
+            }:
                 overlay = fact.get("fact", "")[:90]
             if asset_class == "person_plate" and person:
                 overlay = f"{person.get('name')} · {person.get('role')}"
@@ -306,7 +347,8 @@ def _build_competitive_package(
                 overlay = logo.get("company", "")
             source_lt = (
                 f"Source: {fact.get('source')}"
-                if asset_class in {"kinetic_stat", "news_headline", "ui_screen"}
+                if asset_class
+                in {"kinetic_stat", "news_headline", "ui_screen", "proof_quote"}
                 else ""
             )
 
@@ -318,28 +360,28 @@ def _build_competitive_package(
                     "duration_sec": round(slot, 1),
                     "type": asset_class,
                     "asset_class": asset_class,
+                    "panel_slot": panel.get("slot"),
                     "purpose": "retention" if sec.id == "hook" else "clarity",
                     "story_link": story_link,
                     "on_screen_action": (
-                        f"{asset_class.replace('_', ' ')} · {overlay or sec.title}"
+                        f"{asset_class.replace('_', ' ')} inside floating panel · "
+                        f"{overlay or sec.title}"
                     ),
                     "capcut_overlay": overlay,
                     "source_lower_third": source_lt,
                     "description": (
-                        f"[{asset_class}] {sec.title} beat {i+1}/{n_shots} — "
-                        f"peer-style dense news package"
+                        f"[{asset_class}] {sec.title} beat {i + 1}/{n_shots} — "
+                        f"Chloe studio package · panel={panel.get('slot')}"
                     ),
                     "priority": priority,
                 }
             )
 
-            # Generative B-roll only when class is cinematic
             if asset_class == "cinematic_broll":
                 prompt = cinematics[cine_i % len(cinematics)]
                 cine_i += 1
-                # Bind metaphor to section
                 prompt = (
-                    f"{prompt} Visual metaphor for: {sec.title}. "
+                    f"{prompt} Floating glass panels show visual metaphor for: {sec.title}. "
                     f"Topic: {script.topic_title}."
                 )
                 broll.append(
@@ -348,21 +390,23 @@ def _build_competitive_package(
                         "section_id": sec.id,
                         "story_link": story_link,
                         "asset_class": "cinematic_broll",
-                        "provider_hints": ["grok_imagine", "kling", "runway", "stock"],
+                        "panel_slot": panel.get("slot"),
+                        "provider_hints": ["grok_imagine", "gemini", "kling", "runway"],
                         "aspect_ratio": "16:9",
-                        "style": "cinematic_tech_commercial",
-                        "prompt": _enrich(prompt),
+                        "style": "virtual_studio_anchor",
+                        "prompt": _enrich(prompt, "cinematic_broll"),
                         "negative_cues": (
-                            "watermark, logo, trademark, deepfake face, burned-in text, "
-                            "cartoon, empty boring office, stock rubber stamp"
+                            "AI watermark, SCENIUM logo, empty room, orphan stock "
+                            "without Chloe, invented real-person face"
                         ),
                         "stock_keywords": [
                             script.topic_title[:40],
                             sec.id,
-                            "cinematic tech",
+                            "holographic display",
+                            "virtual studio",
                         ],
                         "news_search_query": script.topic_title,
-                        "motion_hint": "slow push-in or parallax 3–5s; snap cut on beat",
+                        "motion_hint": "subtle floating panel animation, Chloe gestures with tablet",
                         "priority": priority,
                     }
                 )
@@ -374,23 +418,51 @@ def _build_competitive_package(
                     {
                         "shot_id": sid,
                         "section_id": sec.id,
-                        "story_link": "Real-world proof screenshot (not AI inventing news)",
+                        "story_link": "Real-world proof screenshot on floating panel",
                         "asset_class": "ui_screen",
+                        "panel_slot": "video_feed",
                         "provider_hints": ["manual_screenshot", "browser"],
                         "aspect_ratio": "16:9",
                         "style": "screen_capture",
                         "prompt": (
-                            f"EDITOR ACTION (not AI image): {sc.get('action', 'Screenshot primary source')}. "
+                            f"EDITOR ACTION: Capture {sc.get('action', 'primary source')}. "
+                            f"Composite into the floating transparent glass panel behind Chloe. "
                             f"URL hint: {sc.get('url_hint', '')}"
                         ),
                         "negative_cues": "do not AI-fake news websites",
                         "stock_keywords": [],
                         "news_search_query": script.topic_title,
-                        "motion_hint": sc.get("capcut", "Ken Burns zoom"),
+                        "motion_hint": sc.get(
+                            "capcut", "Float screen into view behind anchor"
+                        ),
                         "priority": 1,
                     }
                 )
                 generate_queue.append(sid)
+            elif asset_class == "proof_quote":
+                broll.append(
+                    {
+                        "shot_id": sid,
+                        "section_id": sec.id,
+                        "story_link": story_link,
+                        "asset_class": "proof_quote",
+                        "panel_slot": panel.get("slot"),
+                        "provider_hints": ["capcut_motion"],
+                        "aspect_ratio": "16:9",
+                        "style": "virtual_studio_anchor",
+                        "prompt": article_card_prompt(
+                            overlay or fact.get("fact", ""),
+                            fact.get("source") or "Source",
+                            primary_company,
+                        )
+                        + " Place beside Chloe in studio.",
+                        "negative_cues": "no flat text on black without glass frame; no fake mastheads",
+                        "stock_keywords": [],
+                        "news_search_query": "",
+                        "motion_hint": "Quote slides in on glass panel, glowing border",
+                        "priority": 1,
+                    }
+                )
             elif asset_class == "logo_card":
                 broll.append(
                     {
@@ -398,20 +470,21 @@ def _build_competitive_package(
                         "section_id": sec.id,
                         "story_link": story_link,
                         "asset_class": "logo_card",
+                        "panel_slot": panel.get("slot"),
                         "provider_hints": ["official_brand_download", "screenshot"],
                         "aspect_ratio": "16:9",
                         "style": "identity_capture",
                         "prompt": (
-                            f"CAPTURE REAL LOGO: {logo.get('search_query') if logo else script.topic_title + ' logo'}. "
+                            f"CAPTURE REAL LOGO: "
+                            f"{logo.get('search_query') if logo else script.topic_title + ' logo'}. "
                             f"Company: {(logo or {}).get('company', '')}. "
-                            "Use official PNG/SVG or high-res newsroom asset. "
-                            "Do NOT invent logo with AI. Place on dark navy with subtle glow."
+                            "Place on one of Chloe's floating transparent glass screens with subtle glow."
                         ),
                         "capture": logo,
                         "negative_cues": "no AI-guessed logos",
                         "stock_keywords": [(logo or {}).get("company", ""), "logo"],
                         "news_search_query": (logo or {}).get("search_query", ""),
-                        "motion_hint": "logo slam 0.3s + hold 1.2s",
+                        "motion_hint": "Panel snaps into view 0.3s + hold",
                         "priority": 1,
                     }
                 )
@@ -423,6 +496,7 @@ def _build_competitive_package(
                         "section_id": sec.id,
                         "story_link": story_link,
                         "asset_class": "person_plate",
+                        "panel_slot": panel.get("slot"),
                         "provider_hints": [
                             "official_portrait",
                             "news_still",
@@ -434,19 +508,41 @@ def _build_competitive_package(
                             f"CAPTURE REAL PHOTO: {(person or {}).get('name', 'public figure')}. "
                             f"Role: {(person or {}).get('role', '')}. "
                             f"Search: {(person or {}).get('search_query', '')}. "
-                            "Use official portrait or reputable news still. "
-                            "Optional: image_edit with that photo as reference for grade match only. "
-                            "NEVER pure text-to-image invent of a real person."
+                            "Composite portrait inside a floating glass frame behind Chloe. "
+                            "Add name lower-third within the glass."
                         ),
                         "capture": person,
                         "negative_cues": "no invented deepfake without reference",
                         "stock_keywords": [(person or {}).get("name", ""), "portrait"],
                         "news_search_query": (person or {}).get("search_query", ""),
-                        "motion_hint": "push-in on face 2s + name lower-third",
+                        "motion_hint": "Glass panel floats forward 2s",
                         "priority": 1,
                     }
                 )
                 generate_queue.append(sid)
+            elif asset_class == "end_brand":
+                broll.append(
+                    {
+                        "shot_id": sid,
+                        "section_id": sec.id,
+                        "story_link": "End brand — Tech Frontier soft CTA",
+                        "asset_class": "end_brand",
+                        "panel_slot": "hero_right",
+                        "provider_hints": ["capcut_motion", "grok_imagine"],
+                        "aspect_ratio": "16:9",
+                        "style": "virtual_studio_anchor",
+                        "prompt": _enrich(
+                            "Chloe smiling at camera in virtual studio, glass panel shows "
+                            "Tech Frontier end-screen subscribe + next video placeholders",
+                            "end_brand",
+                        ),
+                        "negative_cues": "hard sell, AI watermark",
+                        "stock_keywords": ["end screen", "subscribe"],
+                        "news_search_query": "",
+                        "motion_hint": "soft hold 3–5s",
+                        "priority": 2,
+                    }
+                )
             else:
                 broll.append(
                     {
@@ -454,19 +550,20 @@ def _build_competitive_package(
                         "section_id": sec.id,
                         "story_link": story_link,
                         "asset_class": asset_class,
+                        "panel_slot": panel.get("slot"),
                         "provider_hints": ["capcut_motion", "after_effects"],
                         "aspect_ratio": "16:9",
                         "style": "motion_graphics",
                         "prompt": (
                             f"EDITOR MOTION GRAPHIC: {asset_class}. "
                             f"On-screen: {overlay or sec.title}. "
-                            f"Source footer: {source_lt}. "
-                            "Use brand kit dark navy + cyan. No AI text rendering."
+                            "Map this data onto the transparent floating screens in Chloe's studio. "
+                            f"{article_card_prompt(overlay or sec.title, fact.get('source') or 'Source', primary_company)}"
                         ),
-                        "negative_cues": "do not generate this as AI still with text",
+                        "negative_cues": "do not generate this as AI still with flat text only",
                         "stock_keywords": [],
                         "news_search_query": "",
-                        "motion_hint": "slam-in 0.35s, hold, whip out",
+                        "motion_hint": "panel pop-in, hold, whip out",
                         "priority": priority,
                     }
                 )
@@ -476,14 +573,13 @@ def _build_competitive_package(
                     {
                         "text": overlay or sec.title,
                         "when": f"{sec.id}@{start_sec:.0f}s",
-                        "style": "kinetic news lower-third",
+                        "style": "glass panel sub-text",
                         "source": source_lt,
                     }
                 )
 
         global_t += dur
 
-    # Thumbs: FACE/LOGO/PRODUCT hero (real captures) + CapCut text
     thumb_raw = thumbnail_concepts_with_identity(
         script.topic_title, script.title_working, entities
     )
@@ -507,38 +603,49 @@ def _build_competitive_package(
     )
 
     strategy = {
-        "story_one_liner": (
-            facts[0]["fact"] if facts else script.topic_title
+        "story_one_liner": (facts[0]["fact"] if facts else script.topic_title),
+        "viewer_promise": (
+            "Information grounded by an anchor who walks them through live data "
+            "in a premium virtual studio."
         ),
-        "viewer_promise": "They understand the claim, the number, the proof, the stakes.",
-        "peer_bar": "AI Revolution–class densemotion + proof screenshots",
-        "reference_url": "https://www.youtube.com/watch?v=MEw7TrAUEPQ",
+        "peer_bar": "Virtual Studio Pundit Format (Chloe + floating glass screens)",
+        "reference_url": "channel_visual_style.yaml / studio reference stills",
+        "format": "virtual_news_studio",
+        "anchor": "Chloe",
+        "channel_badge": "Tech Frontier",
         "trust_tactics": [
-            "Kinetic stats with source footers",
-            "Real company logos captured from official assets",
-            "Real CEO/public-figure portraits when named in VO",
-            "Real screenshots of reputable outlets (not AI fake newspapers)",
-            "Comparison cards for multi-phase claims",
+            "Consistent human anchor (Chloe) builds parasocial trust",
+            "Real company logos placed on floating screens",
+            "Real CEO portraits framed in transparent glass",
+            "Real screenshots of reputable outlets mapped to studio UI",
+            "Published quotes framed as black-on-black cards with source chips",
+            "Video feeds (demos/robots) stay inside panels — studio shell remains",
         ],
         "subscriber_hooks": [
-            "Face + brand recognition in first 3 seconds",
-            "Dense visual reward every few seconds",
-            "Clear number takeaway worth sharing",
-            "End screen next deep dive",
+            "Anchor + glowing data panels in first 3 seconds",
+            "Panels constantly swapping data to match narration",
+            "Clear numbers on glass with source footers",
         ],
         "avoid": style.get("banned_as_primary_visual")
         or [
-            "Empty courtroom filler",
-            "Name-only cards when logo/portrait should appear",
-            "AI-invented faces without reference",
-            "Random server rooms",
+            "Empty stock footage rooms",
+            "Full screen text without the anchor present",
+            "AI-invented faces for real public figures",
+            "Generic server rooms without Chloe",
+            "SCENIUM or third-party channel marks",
+            "AI generator watermarks",
         ],
     }
 
     extras = {
         "creative_strategy": strategy,
         "verified_story_beats": [
-            {"beat": f.get("when"), "fact": f.get("fact"), "source_hint": f.get("source"), "confidence": "high"}
+            {
+                "beat": f.get("when"),
+                "fact": f.get("fact"),
+                "source_hint": f.get("source"),
+                "confidence": "high",
+            }
             for f in facts
         ],
         "on_screen_facts": facts,
@@ -546,21 +653,23 @@ def _build_competitive_package(
         "screen_captures": screens,
         "identity_captures": identity,
         "entities": entities,
+        "studio_layout": layout,
         "retention_notes": [
-            "Show logos + real people photos — news authenticity",
+            "Keep Chloe centered; use her transparent tablet to transition screens",
+            "Place all UI, logos, and portraits in floating glass panels",
             "Match peer energy: cut faster on hook than body",
-            "Thumbnails: face OR product + 2–5 word CapCut text",
-            "AI stills = cinematic energy only; identity = captured assets",
-            "CapCut does all typography",
+            "Thumbnails: Chloe pointing to a massive glowing panel",
+            "Black-on-black article cards with outlet source chips for proof beats",
         ],
         "generate_queue": list(dict.fromkeys(generate_queue))[:PRIORITY_GENERATE_CAP],
         "editor_brand_kit": style.get("brand_grade")
         or {
-            "background": "near-black",
-            "accent_primary": "electric cyan",
-            "type": "bold geometric sans",
+            "background": "cyan/teal gradient studio",
+            "accent_primary": "neon cyan / holographic white",
+            "type": "bold geometric sans on glass",
+            "channel_badge": "Tech Frontier upper-right",
         },
-        "channel_visual_style": "peer_ai_revolution",
+        "channel_visual_style": "virtual_studio_anchor",
         "grounding_news_hits": grounding.get("news_hits") or [],
         "thumbnail_system": (style.get("thumbnail_system") or {}),
     }
@@ -570,25 +679,34 @@ def _build_competitive_package(
 def _markdown(package: VisualPackage, extras: dict[str, Any]) -> str:
     strat = extras.get("creative_strategy") or {}
     lines = [
-        "# Visual Package — Competitive (AI Revolution–class)\n",
-        f"**Peer reference:** {strat.get('reference_url', '')}\n",
+        "# Visual Package — Virtual News Studio (Chloe)\n",
+        f"**Format:** {strat.get('format', 'virtual_news_studio')} · "
+        f"**Anchor:** {strat.get('anchor', 'Chloe')} · "
+        f"**Badge:** {strat.get('channel_badge', 'Tech Frontier')}\n",
+        f"**Peer bar:** {strat.get('peer_bar', '')}\n",
         f"**Shots:** {len(package.shot_list)} · "
         f"**Motion graphic recipes:** {len(extras.get('motion_graphics') or [])} · "
-        f"**Screen captures to grab:** {len(extras.get('screen_captures') or [])}\n",
+        f"**Screen captures:** {len(extras.get('screen_captures') or [])}\n",
         "## Strategy\n",
         f"- {strat.get('story_one_liner')}",
-        f"- Promise: {strat.get('viewer_promise')}",
-        f"- Peer bar: {strat.get('peer_bar')}\n",
+        f"- Promise: {strat.get('viewer_promise')}\n",
         "### Avoid\n",
     ]
     for a in strat.get("avoid") or []:
         lines.append(f"- {a}")
 
-    lines.append("\n## On-screen facts (kinetic type)\n")
+    lines.append("\n## Studio layout (spatial / video-feed rules)\n")
+    layout = extras.get("studio_layout") or {}
+    for rule in (layout.get("spatial_composition_rules") or [])[:8]:
+        lines.append(f"- {rule}")
+    for rule in (layout.get("video_feed_rules") or [])[:6]:
+        lines.append(f"- Feed: {rule}")
+
+    lines.append("\n## On-screen facts (on glass panels)\n")
     for f in extras.get("on_screen_facts") or []:
         lines.append(f"- **{f.get('fact')}** · _{f.get('source')}_")
 
-    lines.append("\n## Motion graphic recipes (CapCut — this is how peers win)\n")
+    lines.append("\n## Motion graphic recipes (CapCut glass panels)\n")
     for m in extras.get("motion_graphics") or []:
         lines.append(f"### {m.get('id')} · {m.get('type')}")
         lines.append(f"- Text: `{m.get('on_screen_text')}`")
@@ -604,7 +722,7 @@ def _markdown(package: VisualPackage, extras: dict[str, Any]) -> str:
         )
 
     ident = extras.get("identity_captures") or {}
-    lines.append("\n## MUST-CAPTURE identity (logos + real people)\n")
+    lines.append("\n## MUST-CAPTURE identity (logos + real people → glass panels)\n")
     lines.append(f"_{ident.get('policy', '')}_\n")
     lines.append("### Logos\n")
     for logo in ident.get("logo_captures") or []:
@@ -627,12 +745,13 @@ def _markdown(package: VisualPackage, extras: dict[str, Any]) -> str:
     for s in package.shot_list:
         lines.append(
             f"- `{s.get('shot_id')}` t={s.get('start_sec')}s "
-            f"**{s.get('asset_class')}** [{s.get('section_id')}] — {s.get('story_link')}"
+            f"**{s.get('asset_class')}** [{s.get('section_id')}] "
+            f"panel={s.get('panel_slot')} — {s.get('story_link')}"
         )
         if s.get("capcut_overlay"):
             lines.append(f"  - TYPE: `{s.get('capcut_overlay')}`")
 
-    lines.append("\n## Cinematic B-roll prompts (Imagine / Kling)\n")
+    lines.append("\n## Studio stills / panel-feed prompts (Imagine / Gemini)\n")
     for b in package.broll_prompts:
         if b.get("asset_class") != "cinematic_broll":
             continue
@@ -646,11 +765,13 @@ def _markdown(package: VisualPackage, extras: dict[str, Any]) -> str:
         lines.append(f"{t.visual_description}\n")
 
     lines.append(
-        "\n## Production order (free tier)\n"
-        "1. Grab real screenshots from screen_captures list\n"
-        "2. Build kinetic stats from motion_graphics in CapCut\n"
-        "3. Generate only cinematic_broll prompts in Imagine\n"
-        "4. Assemble to VO with 3–5s average cut on hook\n"
+        "\n## Production order (Virtual Studio)\n"
+        "1. Capture real logos + portraits (identity_captures)\n"
+        "2. Screenshot proof articles (black-on-black + source chip on glass)\n"
+        "3. Generate Chloe studio plates (cinematic_broll prompts)\n"
+        "4. CapCut: composite identity assets into glass panels under VO\n"
+        "5. Hook cuts 2–4s; body 4–7s; tablet swipe transitions\n"
+        "6. Thumbnail: Chloe + giant glass panel + real face/logo + mega text\n"
     )
     return "\n".join(lines)
 
@@ -697,10 +818,12 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
                             },
                             "grounding": grounding,
                             "baseline_facts": extras.get("on_screen_facts"),
+                            "studio_layout": extras.get("studio_layout"),
                             "style": style,
                             "instruction": (
-                                "Elevate to AI Revolution density. Keep facts accurate. "
-                                "Prefer motion graphics + screenshots over empty rooms."
+                                "Elevate to Virtual Studio density. Keep facts accurate. "
+                                "Chloe always present; all data on glass panels. "
+                                "Prefer real logos/portraits/screenshots over empty rooms."
                             ),
                         },
                         ensure_ascii=False,
@@ -721,7 +844,6 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
                     extras["screen_captures"] = data["screen_captures"]
                 if data.get("on_screen_facts"):
                     extras["on_screen_facts"] = data["on_screen_facts"]
-                # Only replace timeline if dense enough
                 if len(data.get("shot_list") or []) >= 40:
                     thumbs = [
                         ThumbnailConcept.model_validate(t)
@@ -729,10 +851,13 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
                     ] or package.thumbnail_concepts
                     broll = data.get("broll_prompts") or package.broll_prompts
                     for b in broll:
-                        if b.get("asset_class") == "cinematic_broll" or "cinematic" in (
+                        if b.get("asset_class") == "cinematic_broll" or "virtual" in (
                             b.get("style") or ""
                         ):
-                            b["prompt"] = _enrich(b.get("prompt") or "")
+                            b["prompt"] = _enrich(
+                                b.get("prompt") or "",
+                                b.get("asset_class") or "cinematic_broll",
+                            )
                     package = VisualPackage(
                         shot_list=data["shot_list"],
                         broll_prompts=broll,
@@ -740,7 +865,10 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
                         thumbnail_concepts=thumbs,
                     )
             except Exception as exc:  # noqa: BLE001
-                log.warning("LLM visual elevation failed (%s); competitive baseline kept", exc)
+                log.warning(
+                    "LLM visual elevation failed (%s); Virtual Studio baseline kept",
+                    exc,
+                )
 
         full = package.model_dump(mode="json")
         full["meta"] = extras
@@ -761,8 +889,10 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
         ctx.store.write_json(
             "visuals/story_beats.json", extras.get("verified_story_beats") or []
         )
+        ctx.store.write_json(
+            "visuals/studio_layout.json", extras.get("studio_layout") or {}
+        )
 
-        # Imagine queue: cinematic stills + thumbs only
         queue = []
         for b in package.broll_prompts:
             if b.get("asset_class") == "cinematic_broll":
@@ -789,7 +919,8 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
         ctx.store.write_text(
             "visuals/IMAGINE_PROMPTS.txt",
             "\n\n-----\n\n".join(
-                f"[{q.get('shot_id')}|{q.get('kind')}]\n{q.get('prompt')}" for q in queue[:PRIORITY_GENERATE_CAP]
+                f"[{q.get('shot_id')}|{q.get('kind')}]\n{q.get('prompt')}"
+                for q in queue[:PRIORITY_GENERATE_CAP]
             ),
         )
         ident = extras.get("identity_captures") or {}
@@ -797,9 +928,9 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
             "visuals/CAPCUT_CHECKLIST.md",
             "\n".join(
                 [
-                    "# CapCut checklist (peer-competitive + real identity)",
+                    "# CapCut checklist — Virtual News Studio (Chloe)",
                     "",
-                    "## 0. Capture logos + people FIRST (news authenticity)",
+                    "## 0. Capture logos + people FIRST → composite onto glass panels",
                     *[
                         f"- [ ] LOGO {x.get('company')}: search `{x.get('search_query')}`"
                         for x in (ident.get("logo_captures") or [])
@@ -809,31 +940,38 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
                         for x in (ident.get("person_captures") or [])
                     ],
                     "",
-                    "## 1. Screenshots (proof)",
+                    "## 1. Screenshots (proof on glass, black-on-black + source chip)",
                     *[
                         f"- [ ] {s.get('id')}: {s.get('action')}"
                         for s in (extras.get("screen_captures") or [])
                     ],
                     "",
-                    "## 2. Kinetic stats",
+                    "## 2. Kinetic stats on glass panels",
                     *[
                         f"- [ ] {m.get('id')}: {m.get('on_screen_text')}"
                         for m in (extras.get("motion_graphics") or [])
                     ],
                     "",
-                    "## 3. Cinematic stills under VO (3–5s hook cuts)",
-                    "## 4. Thumbnail: REAL face/logo + 2–5 word CapCut text",
+                    "## 3. Chloe studio stills under VO (2–4s hook cuts)",
+                    "## 4. Thumbnail: Chloe + REAL face/logo on glass + 2–5 word CapCut text",
+                    "## 5. Tech Frontier badge upper-right (never SCENIUM)",
                     "",
                 ]
             ),
         )
 
         log.info(
-            "Competitive visual package: shots=%s cinematic=%s mg=%s screens=%s",
+            "Virtual Studio package: shots=%s cinematic=%s mg=%s screens=%s logos=%s people=%s",
             len(package.shot_list),
-            sum(1 for b in package.broll_prompts if b.get("asset_class") == "cinematic_broll"),
+            sum(
+                1
+                for b in package.broll_prompts
+                if b.get("asset_class") == "cinematic_broll"
+            ),
             len(extras.get("motion_graphics") or []),
             len(extras.get("screen_captures") or []),
+            len((ident.get("logo_captures") or [])),
+            len((ident.get("person_captures") or [])),
         )
         return mark_done(stage, {"visual_package": full})
     except Exception as exc:  # noqa: BLE001

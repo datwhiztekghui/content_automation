@@ -1,4 +1,7 @@
-"""Build Gemini-ready prompts in ByteDance-reference cinematic CGI style.
+"""Build Gemini-ready prompts in Virtual News Studio style (Chloe + glass panels).
+
+Legacy Muse Code packs still work; scenes are framed into Chloe's floating
+glass panels with Tech Frontier branding (see peer_style.build_gemini_prompt).
 
 Usage:
   python scripts/build_gemini_prompts.py [run_id]

@@ -10,8 +10,14 @@ from content_factory.agents.visual_director.identity_assets import (
     thumbnail_concepts_with_identity,
 )
 from content_factory.agents.visual_director.peer_style import (
+    STYLE_LOCK,
     cinematic_for_topic,
     motion_graphic_recipes,
+)
+from content_factory.agents.visual_director.studio_layout import (
+    article_card_prompt,
+    panel_for_asset,
+    studio_layout_manifest,
 )
 from content_factory.models.schemas import ScriptSection, VideoScript
 
@@ -61,6 +67,13 @@ def test_peer_pace_faster_than_old_doc_style():
     assert BODY_SHOT_SECONDS <= 6.0
 
 
+def test_style_lock_is_virtual_studio():
+    assert "Chloe" in STYLE_LOCK
+    assert "glass" in STYLE_LOCK.lower()
+    assert "Tech Frontier" in STYLE_LOCK
+    assert "SCENIUM" not in STYLE_LOCK or "not SCENIUM" in STYLE_LOCK
+
+
 def test_competitive_package_has_mixed_asset_classes():
     script = _script()
     grounding = {
@@ -81,11 +94,21 @@ def test_competitive_package_has_mixed_asset_classes():
     assert extras.get("identity_captures")
     assert extras["identity_captures"].get("person_captures")
     assert extras["identity_captures"].get("logo_captures")
-    # thumbs require identity assets
+    assert extras.get("channel_visual_style") == "virtual_studio_anchor"
+    assert extras.get("studio_layout")
+    # thumbs require identity / studio language
     assert any(
-        "REAL" in (t.visual_description or "") or "captured" in (t.visual_description or "").lower()
+        "Chloe" in (t.visual_description or "")
+        or "REAL" in (t.visual_description or "")
+        or "captured" in (t.visual_description or "").lower()
         for t in pkg.thumbnail_concepts
     )
+    # cinematic prompts mention Chloe / studio
+    cines = [
+        b for b in pkg.broll_prompts if b.get("asset_class") == "cinematic_broll"
+    ]
+    assert cines
+    assert any("Chloe" in (b.get("prompt") or "") for b in cines)
 
 
 def test_extract_meta_entities():
@@ -94,9 +117,24 @@ def test_extract_meta_entities():
     plan = build_identity_capture_plan("Meta Muse Code", ents, [])
     assert plan["logo_captures"]
     assert any("Zuckerberg" in p["name"] for p in plan["person_captures"])
+    assert any(
+        "glass" in " ".join(p.get("use_in") or []).lower()
+        for p in plan["person_captures"]
+    )
     thumbs = thumbnail_concepts_with_identity("Meta Muse", "Meta Muse Code", ents)
     assert len(thumbs) >= 5
     assert "required_assets" in thumbs[0]
+    assert "Chloe" in thumbs[0]["visual_description"]
+
+
+def test_extract_bytedance_entities():
+    ents = extract_entities(
+        "ByteDance 10 trillion parameter model",
+        "TikTok parent company AI foundation model",
+    )
+    assert any(e["company"] == "ByteDance" for e in ents)
+    plan = build_identity_capture_plan("ByteDance 10T", ents, [])
+    assert any("ByteDance" in (l.get("company") or "") for l in plan["logo_captures"])
 
 
 def test_meta_facts_have_phase_numbers():
@@ -111,8 +149,23 @@ def test_meta_facts_have_phase_numbers():
 def test_cinematic_library_for_ai_topics():
     prompts = cinematic_for_topic("China 10 trillion parameter AI model")
     assert len(prompts) >= 3
+    assert any("Chloe" in p for p in prompts)
 
 
-def test_motion_recipes():
+def test_motion_recipes_glass_panels():
     r = motion_graphic_recipes([{"fact": "$567M", "source": "BBC", "when": "hook"}])
     assert r[0]["type"] == "kinetic_stat"
+    steps = " ".join(r[0].get("capcut_steps") or [])
+    assert "glass" in steps.lower()
+    assert "Chloe" in steps
+
+
+def test_studio_layout_spatial_rules():
+    m = studio_layout_manifest()
+    assert m["anchor"] == "Chloe"
+    assert m["channel_badge"] == "Tech Frontier"
+    assert m["panel_slots"]
+    assert panel_for_asset("kinetic_stat")["slot"]
+    card = article_card_prompt("10 TRILLION PARAMETERS", "The Verge", "ByteDance")
+    assert "glass" in card.lower()
+    assert "ByteDance" in card

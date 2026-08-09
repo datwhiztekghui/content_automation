@@ -1,8 +1,8 @@
-"""Identity assets: real logos + real public-figure photos for news authenticity.
+"""Identity assets: real logos + real public-figure photos on Virtual Studio glass panels.
 
 Peer channels show the company and the person. We plan CAPTURE (official/news
 sources), not invented deepfakes. Optional reference-first Imagine only after
-a real photo is on disk.
+a real photo is on disk. All identity assets map onto Chloe's floating screens.
 """
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-# Topic keywords → entities the editor MUST put on screen
+# Topic keywords → entities the editor MUST put on glass panels
 ENTITY_CATALOG: list[dict[str, Any]] = [
     {
         "keys": ["meta", "facebook", "instagram", "threads", "muse code", "whatsapp"],
@@ -29,7 +29,7 @@ ENTITY_CATALOG: list[dict[str, Any]] = [
         ],
     },
     {
-        "keys": ["openai", "chatgpt", "gpt-4", "gpt-5", "sora", "astra"],
+        "keys": ["openai", "chatgpt", "gpt-4", "gpt-5", "sora", "astra", "o1", "o3"],
         "company": "OpenAI",
         "products": ["OpenAI", "ChatGPT"],
         "people": [
@@ -55,7 +55,7 @@ ENTITY_CATALOG: list[dict[str, Any]] = [
         "logo_search": ["Anthropic logo official"],
     },
     {
-        "keys": ["google", "deepmind", "gemini", "alphabet", "wayland"],
+        "keys": ["google", "deepmind", "gemini", "alphabet", "wayland", "veo"],
         "company": "Google",
         "products": ["Google", "Gemini", "DeepMind"],
         "people": [
@@ -73,7 +73,7 @@ ENTITY_CATALOG: list[dict[str, Any]] = [
         "logo_search": ["Google logo official", "DeepMind logo"],
     },
     {
-        "keys": ["microsoft", "openai partnership", "copilot", "azure"],
+        "keys": ["microsoft", "copilot", "azure"],
         "company": "Microsoft",
         "products": ["Microsoft", "Copilot", "Azure"],
         "people": [
@@ -86,7 +86,7 @@ ENTITY_CATALOG: list[dict[str, Any]] = [
         "logo_search": ["Microsoft logo official"],
     },
     {
-        "keys": ["nvidia", "blackwell", "cuda", "jensen"],
+        "keys": ["nvidia", "blackwell", "cuda", "jensen", "nvlink"],
         "company": "NVIDIA",
         "products": ["NVIDIA", "CUDA"],
         "people": [
@@ -99,7 +99,7 @@ ENTITY_CATALOG: list[dict[str, Any]] = [
         "logo_search": ["NVIDIA logo official"],
     },
     {
-        "keys": ["xai", "grok", "elon"],
+        "keys": ["xai", "grok", "elon musk"],
         "company": "xAI",
         "products": ["xAI", "Grok"],
         "people": [
@@ -112,7 +112,20 @@ ENTITY_CATALOG: list[dict[str, Any]] = [
         "logo_search": ["xAI logo official"],
     },
     {
-        "keys": ["apple", "iphone", "tim cook"],
+        "keys": ["tesla", "optimus", "fsd", "dojo"],
+        "company": "Tesla",
+        "products": ["Tesla", "Optimus", "FSD"],
+        "people": [
+            {
+                "name": "Elon Musk",
+                "role": "CEO, Tesla",
+                "search": "Elon Musk Tesla official portrait",
+            }
+        ],
+        "logo_search": ["Tesla logo official"],
+    },
+    {
+        "keys": ["apple", "iphone", "tim cook", "apple intelligence"],
         "company": "Apple",
         "products": ["Apple"],
         "people": [
@@ -125,7 +138,7 @@ ENTITY_CATALOG: list[dict[str, Any]] = [
         "logo_search": ["Apple logo official"],
     },
     {
-        "keys": ["alibaba", "qwen"],
+        "keys": ["alibaba", "qwen", "tongyi"],
         "company": "Alibaba",
         "products": ["Alibaba", "Qwen"],
         "people": [
@@ -138,8 +151,72 @@ ENTITY_CATALOG: list[dict[str, Any]] = [
         "logo_search": ["Alibaba logo official", "Qwen logo"],
     },
     {
+        "keys": [
+            "bytedance",
+            "byte-dance",
+            "byte dance",
+            "tiktok",
+            "douyin",
+            "seedance",
+            "10 trillion",
+            "10t parameter",
+        ],
+        "company": "ByteDance",
+        "products": ["ByteDance", "TikTok", "Douyin"],
+        "people": [
+            {
+                "name": "Liang Rubo",
+                "role": "CEO, ByteDance",
+                "search": "Liang Rubo ByteDance CEO official photo",
+            }
+        ],
+        "logo_search": [
+            "ByteDance logo official",
+            "TikTok logo official transparent PNG",
+        ],
+    },
+    {
+        "keys": ["deepseek", "deep seek"],
+        "company": "DeepSeek",
+        "products": ["DeepSeek"],
+        "people": [
+            {
+                "name": "Liang Wenfeng",
+                "role": "CEO, DeepSeek",
+                "search": "Liang Wenfeng DeepSeek founder portrait",
+            }
+        ],
+        "logo_search": ["DeepSeek logo official"],
+    },
+    {
+        "keys": ["amazon", "aws", "bedrock", "anthropic partnership"],
+        "company": "Amazon",
+        "products": ["Amazon", "AWS", "Bedrock"],
+        "people": [
+            {
+                "name": "Andy Jassy",
+                "role": "CEO, Amazon",
+                "search": "Andy Jassy Amazon CEO portrait",
+            }
+        ],
+        "logo_search": ["Amazon logo official", "AWS logo official"],
+    },
+    {
+        "keys": ["figure ai", "figure robotics", "helix"],
+        "company": "Figure",
+        "products": ["Figure", "Helix"],
+        "people": [
+            {
+                "name": "Brett Adcock",
+                "role": "CEO, Figure",
+                "search": "Brett Adcock Figure AI CEO portrait",
+            }
+        ],
+        "logo_search": ["Figure AI logo official"],
+    },
+    {
         "keys": ["new mexico", "torrez", "public nuisance", "biedscheid"],
-        "company": "Meta",  # defendant in that story
+        "company": "Meta",
         "products": ["Meta", "Instagram", "Facebook"],
         "people": [
             {
@@ -176,13 +253,16 @@ def extract_entities(topic: str, extra_text: str = "") -> list[dict[str, Any]]:
         if any(k in blob for k in entry["keys"]):
             key = entry["company"]
             if key in seen:
-                # merge people if same company hit twice
                 for f in found:
                     if f["company"] == key:
                         names = {p["name"] for p in f["people"]}
                         for p in entry["people"]:
                             if p["name"] not in names:
                                 f["people"].append(p)
+                        # merge logo searches
+                        for q in entry.get("logo_search") or []:
+                            if q not in f["logo_search"]:
+                                f["logo_search"].append(q)
                         break
                 continue
             seen.add(key)
@@ -223,7 +303,7 @@ def build_identity_capture_plan(
     entities: list[dict[str, Any]],
     news_hits: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Editor + pipeline checklist: capture real logos and real faces."""
+    """Editor + pipeline checklist: capture real logos and real faces for studio screens."""
     logos: list[dict[str, Any]] = []
     people: list[dict[str, Any]] = []
     for ent in entities:
@@ -236,9 +316,9 @@ def build_identity_capture_plan(
                     "capture_method": "download_official_or_screenshot",
                     "search_query": q,
                     "use_in": [
-                        "logo_card sting after naming the company",
-                        "thumbnail corner badge",
-                        "lower-third brand chip",
+                        "floating transparent glass panel behind Chloe",
+                        "thumbnail glowing screen",
+                        "lower-third brand chip on glass",
                     ],
                     "do_not": "Do not AI-guess the logo shape/colors",
                     "priority": 1,
@@ -253,9 +333,9 @@ def build_identity_capture_plan(
                     "capture_method": "official_portrait_or_news_still",
                     "search_query": p.get("search") or f"{p['name']} portrait",
                     "use_in": [
-                        "person_plate when VO names them",
+                        "framed in transparent glass on the floating panel behind Chloe",
                         "thumbnail hero face if they drive the story",
-                        "proof_quote card with real photo",
+                        "proof_quote card with real photo on glass",
                     ],
                     "do_not": (
                         "Do not invent a photoreal face without a real reference image. "
@@ -273,7 +353,7 @@ def build_identity_capture_plan(
         "topic": topic,
         "policy": (
             "News about products/services must SHOW company logos and relevant public "
-            "figures (real captures), not name-only lower-thirds."
+            "figures (real captures) mapped onto Chloe's floating studio screens."
         ),
         "entities": entities,
         "logo_captures": logos,
@@ -288,10 +368,11 @@ def build_identity_capture_plan(
         ],
         "capcut_identity_recipe": [
             "Import logo PNG with transparency when possible",
-            "Person plate: circular or 3D card crop of real photo + name + role",
-            "When VO says company name → cut to logo sting ≤1.5s",
-            "When VO says CEO/AG/judge name → cut to real portrait ≤2.5s",
-            "Thumbnail: largest face or product + 2–5 word text overlay",
+            "Person plate: place real photo inside a floating transparent glass frame next to Chloe",
+            "When VO quotes someone, put published quote + portrait on glass",
+            "When VO says company name → logo appears on Chloe's floating panel",
+            "Thumbnail: Chloe pointing/gesturing to the largest floating screen with face or product",
+            "Tech Frontier badge upper-right on all generative stills",
         ],
     }
 
@@ -301,7 +382,7 @@ def thumbnail_concepts_with_identity(
     title: str,
     entities: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """High-CTR thumb recipes that expect REAL face/logo assets in CapCut."""
+    """High-CTR thumb recipes: Virtual Studio + Chloe + real identity assets."""
     primary_person = None
     primary_company = None
     for e in entities:
@@ -318,12 +399,12 @@ def thumbnail_concepts_with_identity(
             "concept_id": "t1",
             "headline": title[:70],
             "subtext": f"{company} in the spotlight",
-            "layout": "face_left_text_right",
+            "layout": "anchor_left_screen_right",
             "visual_description": (
-                f"COMPOSITE THUMBNAIL (CapCut): place REAL captured photo of {person_name} "
-                f"on left third (high-contrast grade, cyan rim light), dark navy background, "
-                f"REAL {company} logo small badge top-right. Leave right half empty for huge "
-                f"text. Do not AI-invent the face — use captured portrait only."
+                f"COMPOSITE THUMBNAIL (CapCut): Chloe standing left in her teal virtual studio. "
+                f"She holds her transparent tablet, pointing to a massive glowing glass panel on the right. "
+                f"Inside the panel: REAL captured photo of {person_name} and REAL {company} logo. "
+                f"Giant CapCut text overlays the panel. Tech Frontier badge top-right."
             ),
             "text_overlay": "THIS CHANGES EVERYTHING",
             "emotion": "shock",
@@ -333,10 +414,11 @@ def thumbnail_concepts_with_identity(
             "concept_id": "t2",
             "headline": f"{company} just moved",
             "subtext": topic[:50],
-            "layout": "logo_vs_product",
+            "layout": "anchor_center_split_screens",
             "visual_description": (
-                f"COMPOSITE: giant REAL {company} logo center-left on black, product/UI "
-                f"screenshot or cinematic code metaphor right, space for number overlay."
+                f"COMPOSITE: Chloe standing center, looking up. Behind her, the globe background. "
+                f"To her left, a floating panel with the REAL {company} logo. To her right, a panel "
+                f"showing a product UI screenshot. Text banner across the top. Tech Frontier badge."
             ),
             "text_overlay": "JUST DROPPED",
             "emotion": "urgency",
@@ -346,11 +428,10 @@ def thumbnail_concepts_with_identity(
             "concept_id": "t3",
             "headline": person_name,
             "subtext": "What they just unleashed",
-            "layout": "face_plus_big_number",
+            "layout": "anchor_face_panel",
             "visual_description": (
-                f"COMPOSITE: tight crop REAL photo of {person_name} bottom-left looking "
-                f"toward camera, dark vignette, top banner space for 3-word claim, "
-                f"{company} logo chip."
+                f"COMPOSITE: Chloe medium shot left; giant glass panel right with tight crop "
+                f"REAL photo of {person_name}, dark vignette, 3-word claim banner, {company} logo chip."
             ),
             "text_overlay": "EXPLAINED",
             "emotion": "authority",
@@ -360,10 +441,10 @@ def thumbnail_concepts_with_identity(
             "concept_id": "t4",
             "headline": "Why it matters to you",
             "subtext": topic[:40],
-            "layout": "product_center_text_banner",
+            "layout": "anchor_hologram_overlay",
             "visual_description": (
-                "COMPOSITE: real product UI screenshot (blur sensitive data) full-bleed "
-                "darkened 40%, cyan accent bars, room for banner text."
+                "COMPOSITE: Chloe swiping her transparent tablet. A giant glowing transparent UI panel "
+                "fills the right side containing a real product screenshot. Top right Tech Frontier logo."
             ),
             "text_overlay": "WHY IT MATTERS",
             "emotion": "curiosity",
@@ -373,10 +454,10 @@ def thumbnail_concepts_with_identity(
             "concept_id": "t5",
             "headline": "The real story",
             "subtext": company,
-            "layout": "face_left_text_right",
+            "layout": "anchor_dual_identity",
             "visual_description": (
-                f"COMPOSITE dual: REAL {person_name} photo + REAL {company} logo duel frame, "
-                "high contrast split, peer-channel CTR energy."
+                f"COMPOSITE dual glass: REAL {person_name} photo + REAL {company} logo flanking Chloe, "
+                "high contrast split, peer-channel CTR energy, Tech Frontier badge."
             ),
             "text_overlay": "THE REAL STORY",
             "emotion": "clarity",
