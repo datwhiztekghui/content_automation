@@ -181,6 +181,7 @@ see `config/channel_visual_style.yaml`).
 - **Only ban AI watermarks** (Gemini/Grok/Midjourney stamps) — not logos or titles
 - Hook cuts ~2–4s; body ~4–7s
 - Gemini handoff: `scripts/build_gemini_prompts.py` → `visuals/GEMINI_PROMPTS.md`
+- **Studio references (image-edit base):** `assets/studio_reference/chloe_studio_base.jpg` (+ `chloe_studio_logo_panel.jpg`)
 
 ---
 

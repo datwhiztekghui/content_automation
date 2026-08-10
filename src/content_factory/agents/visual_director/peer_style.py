@@ -19,6 +19,9 @@ import yaml
 from config.settings import PROJECT_ROOT
 
 STYLE_PATH = PROJECT_ROOT / "config" / "channel_visual_style.yaml"
+STUDIO_REFERENCE_DIR = PROJECT_ROOT / "assets" / "studio_reference"
+STUDIO_REFERENCE_BASE = STUDIO_REFERENCE_DIR / "chloe_studio_base.jpg"
+STUDIO_REFERENCE_LOGO_PANEL = STUDIO_REFERENCE_DIR / "chloe_studio_logo_panel.jpg"
 
 # Permanent identity lock for every generative still
 STYLE_LOCK = (
@@ -33,6 +36,42 @@ STYLE_LOCK = (
 )
 
 CHANNEL_BADGE = "Tech Frontier"
+
+
+def studio_reference_paths() -> dict[str, Path]:
+    """Canonical Chloe studio plates for image-to-image consistency."""
+    return {
+        "base": STUDIO_REFERENCE_BASE,
+        "logo_panel": STUDIO_REFERENCE_LOGO_PANEL,
+        "dir": STUDIO_REFERENCE_DIR,
+    }
+
+
+def studio_reference_manifest() -> dict[str, Any]:
+    """Paths + policy for editors and generation tools."""
+    paths = studio_reference_paths()
+    return {
+        "policy": (
+            "Use chloe_studio_base.jpg as the primary image-edit reference for all "
+            "subsequent Virtual Studio stills. Keep Chloe face, wardrobe, and set; "
+            "change only floating glass panel content and minor pose."
+        ),
+        "primary": "base",
+        "files": {
+            "base": {
+                "path": str(paths["base"]),
+                "relative": "assets/studio_reference/chloe_studio_base.jpg",
+                "exists": paths["base"].exists(),
+                "use": "Primary base plate for image_edit / Gemini reference-first",
+            },
+            "logo_panel": {
+                "path": str(paths["logo_panel"]),
+                "relative": "assets/studio_reference/chloe_studio_logo_panel.jpg",
+                "exists": paths["logo_panel"].exists(),
+                "use": "Secondary plate when beat is logo sting",
+            },
+        },
+    }
 
 
 def load_visual_style() -> dict[str, Any]:

@@ -10,6 +10,16 @@ anchor:
   prop: "transparent glass tablet (always in hand)"
   presence: "center frame on generative hero stills; continuous parasocial host"
 
+# Canonical image-to-image references (keep Chloe + set consistent)
+studio_reference:
+  dir: "assets/studio_reference"
+  primary: "assets/studio_reference/chloe_studio_base.jpg"
+  logo_panel: "assets/studio_reference/chloe_studio_logo_panel.jpg"
+  policy: >
+    Use primary as the edit/reference source for subsequent stills.
+    Preserve Chloe face, wardrobe, teal sofa, cyan globe, glass tablet,
+    Tech Frontier badge. Change only panel content and minor pose.
+
 peer_references:
   - name: "Virtual studio / football pundit desk energy"
     traits:

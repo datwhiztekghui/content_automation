@@ -13,6 +13,8 @@ from content_factory.agents.visual_director.peer_style import (
     STYLE_LOCK,
     cinematic_for_topic,
     motion_graphic_recipes,
+    studio_reference_manifest,
+    studio_reference_paths,
 )
 from content_factory.agents.visual_director.studio_layout import (
     article_card_prompt,
@@ -169,3 +171,12 @@ def test_studio_layout_spatial_rules():
     card = article_card_prompt("10 TRILLION PARAMETERS", "The Verge", "ByteDance")
     assert "glass" in card.lower()
     assert "ByteDance" in card
+
+
+def test_studio_reference_plates_exist():
+    paths = studio_reference_paths()
+    assert paths["base"].exists()
+    assert paths["logo_panel"].exists()
+    manifest = studio_reference_manifest()
+    assert manifest["files"]["base"]["exists"]
+    assert "chloe_studio_base.jpg" in manifest["files"]["base"]["relative"]

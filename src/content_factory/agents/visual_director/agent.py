@@ -26,6 +26,7 @@ from content_factory.agents.visual_director.peer_style import (
     load_visual_style,
     motion_graphic_recipes,
     screen_capture_plan,
+    studio_reference_manifest,
 )
 from content_factory.agents.visual_director.studio_layout import (
     article_card_prompt,
@@ -670,6 +671,7 @@ def _build_competitive_package(
             "channel_badge": "Tech Frontier upper-right",
         },
         "channel_visual_style": "virtual_studio_anchor",
+        "studio_reference": studio_reference_manifest(),
         "grounding_news_hits": grounding.get("news_hits") or [],
         "thumbnail_system": (style.get("thumbnail_system") or {}),
     }
@@ -892,6 +894,9 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
         ctx.store.write_json(
             "visuals/studio_layout.json", extras.get("studio_layout") or {}
         )
+        ctx.store.write_json(
+            "visuals/studio_reference.json", extras.get("studio_reference") or {}
+        )
 
         queue = []
         for b in package.broll_prompts:
@@ -953,6 +958,10 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
                     ],
                     "",
                     "## 3. Chloe studio stills under VO (2–4s hook cuts)",
+                    "### Reference-first (required for facial/set consistency)",
+                    "- [ ] Start from `assets/studio_reference/chloe_studio_base.jpg`",
+                    "- [ ] Optional logo sting base: `assets/studio_reference/chloe_studio_logo_panel.jpg`",
+                    "- [ ] Image-edit only panel content + minor pose — do not reinvent Chloe",
                     "## 4. Thumbnail: Chloe + REAL face/logo on glass + 2–5 word CapCut text",
                     "## 5. Tech Frontier badge upper-right (never SCENIUM)",
                     "",
