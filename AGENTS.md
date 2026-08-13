@@ -9,7 +9,7 @@ Orchestration is LangGraph; each agent is a modular Python package under `src/co
 
 | Field | Value |
 |--------|--------|
-| Working name | **Tech Frontier** (override via `CHANNEL_NAME` / `config/channel_style.yaml`) |
+| Working name | **Clarion Frame** (override via `CHANNEL_NAME` / `config/channel_style.yaml`) |
 | Niche | Tech, inventions, robotics, AI breakthroughs, science, and related news |
 | Peer style | Clear, high-retention explainers (inspired by channels like AI Revolution, but **broader than pure AI**) |
 | Audience | Curious professionals and smart generalists |
@@ -108,16 +108,22 @@ Modes:
 |--|--|
 | **Package** | `agents/scriptwriter` |
 | **Stage** | `scriptwriter` |
-| **Goal** | High-retention **complete** 12–16 minute script in channel voice (FT-style curiosity prose, spoken) |
+| **Goal** | High-retention **tight** hybrid script (FT curiosity + peer storytelling), spoken |
 | **Inputs** | `ResearchBrief` + channel style |
 | **Outputs** | `VideoScript` → `script/draft.json` + `.md` + `narration.txt` + `quality.json` |
 
 **Must include:** timestamps, visual cues, on-screen text, source callouts, soft CTA.
 
-**Word target:** ~1,800–2,400 words (~150 wpm). Floor ~1,400 words.
+**Word target:** ~900–1,600 words (~7–12 min at ~150 wpm). Floor ~700. Hard max ~1,800.
+Do **not** pad to 12–16 minutes by rehashing.
 
-**Completeness guards:** per-section LLM retries, min-words floors, no empty JSON stubs,
-expanded brief fallback when weak (never silent one-sentence sections).
+**Storytelling hybrid** (see `config/channel_style.yaml`):
+- **AI Revolution** — cold open claim; kinetic proof; race stakes  
+- **Mrwhosetheboss** — human/market cause-chain; friend energy  
+- **MKBHD** — one point of the video; under-claim; evidence before verdict  
+
+**Style guards:** Elements of Style (omit needless words), no section re-openers,
+no AI clichés, per-section min/max words, trim when bloated.
 
 ---
 
@@ -176,7 +182,7 @@ see `config/channel_visual_style.yaml`).
 - **CEOs / public figures → REAL photos** on glass when they drive the news (never invent faces)
 - **Proof screenshots** as black-on-black cards with **outlet source chips** on glass
 - **Video feeds** (demos/robots/UI) stay inside panels — studio shell remains
-- **Channel badge:** Tech Frontier upper-right — never SCENIUM or third-party marks
+- **Channel badge:** Clarion Frame upper-right — never SCENIUM or third-party marks
 - **Thumbnails:** Chloe + giant glass panel (real face/logo/product) + 2–6 word mega text
 - **Only ban AI watermarks** (Gemini/Grok/Midjourney stamps) — not logos or titles
 - Hook cuts ~2–4s; body ~4–7s

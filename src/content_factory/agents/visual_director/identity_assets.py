@@ -372,7 +372,7 @@ def build_identity_capture_plan(
             "When VO quotes someone, put published quote + portrait on glass",
             "When VO says company name → logo appears on Chloe's floating panel",
             "Thumbnail: Chloe pointing/gesturing to the largest floating screen with face or product",
-            "Tech Frontier badge upper-right on all generative stills",
+            "Clarion Frame badge upper-right on all generative stills",
         ],
     }
 
@@ -404,7 +404,7 @@ def thumbnail_concepts_with_identity(
                 f"COMPOSITE THUMBNAIL (CapCut): Chloe standing left in her teal virtual studio. "
                 f"She holds her transparent tablet, pointing to a massive glowing glass panel on the right. "
                 f"Inside the panel: REAL captured photo of {person_name} and REAL {company} logo. "
-                f"Giant CapCut text overlays the panel. Tech Frontier badge top-right."
+                f"Giant CapCut text overlays the panel. Clarion Frame badge top-right."
             ),
             "text_overlay": "THIS CHANGES EVERYTHING",
             "emotion": "shock",
@@ -418,7 +418,7 @@ def thumbnail_concepts_with_identity(
             "visual_description": (
                 f"COMPOSITE: Chloe standing center, looking up. Behind her, the globe background. "
                 f"To her left, a floating panel with the REAL {company} logo. To her right, a panel "
-                f"showing a product UI screenshot. Text banner across the top. Tech Frontier badge."
+                f"showing a product UI screenshot. Text banner across the top. Clarion Frame badge."
             ),
             "text_overlay": "JUST DROPPED",
             "emotion": "urgency",
@@ -444,7 +444,7 @@ def thumbnail_concepts_with_identity(
             "layout": "anchor_hologram_overlay",
             "visual_description": (
                 "COMPOSITE: Chloe swiping her transparent tablet. A giant glowing transparent UI panel "
-                "fills the right side containing a real product screenshot. Top right Tech Frontier logo."
+                "fills the right side containing a real product screenshot. Top right Clarion Frame logo."
             ),
             "text_overlay": "WHY IT MATTERS",
             "emotion": "curiosity",
@@ -457,7 +457,7 @@ def thumbnail_concepts_with_identity(
             "layout": "anchor_dual_identity",
             "visual_description": (
                 f"COMPOSITE dual glass: REAL {person_name} photo + REAL {company} logo flanking Chloe, "
-                "high contrast split, peer-channel CTR energy, Tech Frontier badge."
+                "high contrast split, peer-channel CTR energy, Clarion Frame badge."
             ),
             "text_overlay": "THE REAL STORY",
             "emotion": "clarity",

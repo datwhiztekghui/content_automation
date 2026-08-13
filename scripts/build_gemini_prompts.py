@@ -1,7 +1,7 @@
 """Build Gemini-ready prompts in Virtual News Studio style (Chloe + glass panels).
 
 Legacy Muse Code packs still work; scenes are framed into Chloe's floating
-glass panels with Tech Frontier branding (see peer_style.build_gemini_prompt).
+glass panels with Clarion Frame branding (see peer_style.build_gemini_prompt).
 
 Usage:
   python scripts/build_gemini_prompts.py [run_id]
@@ -312,7 +312,7 @@ def muse_code_shots(company: str) -> list[dict[str, str]]:
             "cta_01",
             "Clean end-card CGI: robot looking at camera, META logo hologram, subscribe space lower third area still has main title",
             "SUBSCRIBE",
-            "TECH FRONTIER",
+            "Clarion Frame",
             logo_extra(c),
         ),
         (

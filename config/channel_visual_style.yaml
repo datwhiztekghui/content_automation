@@ -1,8 +1,8 @@
 # Virtual News Studio DNA — peer bar: sports-pundit broadcast + tech news density
-# Anchor: Chloe + floating glass panels. Channel badge: Tech Frontier.
+# Anchor: Chloe + floating glass panels. Channel badge: Clarion Frame.
 # Real logos / portraits / proof screenshots live ON glass. Only ban AI watermarks.
 
-channel_name: "Tech Frontier"
+channel_name: "Clarion Frame"
 visual_format: "virtual_news_studio"
 anchor:
   name: "Chloe"
@@ -18,7 +18,7 @@ studio_reference:
   policy: >
     Use primary as the edit/reference source for subsequent stills.
     Preserve Chloe face, wardrobe, teal sofa, cyan globe, glass tablet,
-    Tech Frontier badge. Change only panel content and minor pose.
+    Clarion Frame badge. Change only panel content and minor pose.
 
 peer_references:
   - name: "Virtual studio / football pundit desk energy"
@@ -46,7 +46,7 @@ brand_grade:
   accent_secondary: "amber / hot white for main claim on glass"
   type: "bold geometric sans on glass panels, 2–6 words primary claim"
   motion: "panel slide-in 0.4s, tablet swipe transitions, soft glass chime"
-  channel_badge: "Tech Frontier upper-right (never SCENIUM)"
+  channel_badge: "Clarion Frame upper-right (never SCENIUM)"
 
 # Image generation prompt law (Grok Imagine / Gemini / Midjourney)
 image_prompt_rules:
@@ -55,7 +55,7 @@ image_prompt_rules:
     - floating transparent glass panels with story content
     - company logo on glass when the story is about that company
     - bold English on-panel title for the shot’s main claim
-    - Tech Frontier channel badge upper-right
+    - Clarion Frame channel badge upper-right
   must_exclude:
     - AI generator watermarks (Midjourney/Gemini/Grok stamp, stock watermark)
     - SCENIUM or third-party channel marks
@@ -66,7 +66,7 @@ image_prompt_rules:
     Female anchor Chloe (pink-blonde hair, white t-shirt, dark jeans) center,
     transparent glass tablet in hands, curved teal sofa, massive glowing cyan
     tech globe, digital matrix walls, floating transparent glass panels for
-    data/portraits/quotes. Tech Frontier badge top-right. YouTube 16:9.
+    data/portraits/quotes. Clarion Frame badge top-right. YouTube 16:9.
     NO AI generator watermark. Perfect facial consistency.
 
 thumbnail_system:
@@ -144,5 +144,5 @@ spatial_rules:
   - Chloe center or center-left; glass panels carry story content
   - Max 1–2 primary panels in focus per shot
   - Video feeds stay inside panels; do not lose studio shell
-  - Tech Frontier badge every generative still
+  - Clarion Frame badge every generative still
   - Hook 2–4s cuts; body 4–7s

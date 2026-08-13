@@ -5,7 +5,7 @@ stands center, controlling transparent holographic glass screens via a glass tab
 Real logos, portraits, stats, and quotes live ON those panels — not as free-floating
 CGI mush or empty documentary B-roll.
 
-Channel badge: **Tech Frontier** (never SCENIUM or third-party watermarks).
+Channel badge: **Clarion Frame** (never SCENIUM or third-party watermarks).
 Only ban AI-generator watermarks — logos and claim titles are required.
 """
 
@@ -31,11 +31,11 @@ STYLE_LOCK = (
     "She stands center holding a transparent glass tablet used to control the environment. "
     "Background: massive glowing cyan tech globe, digital matrix walls, curved teal sofa. "
     "Floating transparent glass panels surround her displaying data, portraits, logos, and quotes. "
-    "Upper-right corner: Tech Frontier channel logo badge (not SCENIUM). "
+    "Upper-right corner: Clarion Frame channel logo badge (not SCENIUM). "
     "8k broadcast quality, YouTube 16:9. NO AI generator watermark, NO stock watermark."
 )
 
-CHANNEL_BADGE = "Tech Frontier"
+CHANNEL_BADGE = "Clarion Frame"
 
 
 def studio_reference_paths() -> dict[str, Path]:
@@ -215,7 +215,7 @@ def build_gemini_prompt(
         extra,
         STYLE_LOCK,
         "Composition: Chloe center or center-left; giant glass panel with typography and brand "
-        "on the opposite side; Tech Frontier badge top-right; rich studio depth.",
+        "on the opposite side; Clarion Frame badge top-right; rich studio depth.",
     ]
     return " ".join(p for p in parts if p)
 

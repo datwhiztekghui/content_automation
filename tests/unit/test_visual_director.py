@@ -72,7 +72,7 @@ def test_peer_pace_faster_than_old_doc_style():
 def test_style_lock_is_virtual_studio():
     assert "Chloe" in STYLE_LOCK
     assert "glass" in STYLE_LOCK.lower()
-    assert "Tech Frontier" in STYLE_LOCK
+    assert "Clarion Frame" in STYLE_LOCK
     assert "SCENIUM" not in STYLE_LOCK or "not SCENIUM" in STYLE_LOCK
 
 
@@ -165,7 +165,7 @@ def test_motion_recipes_glass_panels():
 def test_studio_layout_spatial_rules():
     m = studio_layout_manifest()
     assert m["anchor"] == "Chloe"
-    assert m["channel_badge"] == "Tech Frontier"
+    assert m["channel_badge"] == "Clarion Frame"
     assert m["panel_slots"]
     assert panel_for_asset("kinetic_stat")["slot"]
     card = article_card_prompt("10 TRILLION PARAMETERS", "The Verge", "ByteDance")

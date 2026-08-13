@@ -53,11 +53,11 @@ PRIORITY_GENERATE_CAP = 32
 
 PHOTOREAL_SUFFIX = STYLE_LOCK
 
-SYSTEM = """You are the Creative Director for Tech Frontier — Virtual News Studio format.
+SYSTEM = """You are the Creative Director for Clarion Frame — Virtual News Studio format.
 
 VISUAL LANGUAGE (Virtual Studio / sports-pundit style):
 - Single consistent anchor: Chloe (pink-blonde hair, white shirt, dark jeans) is always on screen.
-- Set: curved teal sofa, giant glowing tech globe, Tech Frontier logo top-right (never SCENIUM).
+- Set: curved teal sofa, giant glowing tech globe, Clarion Frame logo top-right (never SCENIUM).
 - Interaction: Chloe ALWAYS holds a transparent glass tablet to control screens behind her.
 - Information: ALL data (stats, logos, UI, quotes) appear on floating transparent glass panels.
 - REAL company logos and CEO/public-figure photos appear IN THESE PANELS when they drive the story.
@@ -111,7 +111,7 @@ def _enrich(prompt: str, asset_class: str = "cinematic_broll") -> str:
         p = f"{p.rstrip('.')}. {PHOTOREAL_SUFFIX}"
     elif "watermark" not in p.lower():
         p = f"{p.rstrip('.')}. NO AI generator watermark."
-    if "tech frontier" not in p.lower() and "glass panel" in p.lower():
+    if "Clarion Frame" not in p.lower() and "glass panel" in p.lower():
         p = f"{p} {studio_prompt_suffix(asset_class)}"
     return p
 
@@ -526,7 +526,7 @@ def _build_competitive_package(
                     {
                         "shot_id": sid,
                         "section_id": sec.id,
-                        "story_link": "End brand — Tech Frontier soft CTA",
+                        "story_link": "End brand — Clarion Frame soft CTA",
                         "asset_class": "end_brand",
                         "panel_slot": "hero_right",
                         "provider_hints": ["capcut_motion", "grok_imagine"],
@@ -534,7 +534,7 @@ def _build_competitive_package(
                         "style": "virtual_studio_anchor",
                         "prompt": _enrich(
                             "Chloe smiling at camera in virtual studio, glass panel shows "
-                            "Tech Frontier end-screen subscribe + next video placeholders",
+                            "Clarion Frame end-screen subscribe + next video placeholders",
                             "end_brand",
                         ),
                         "negative_cues": "hard sell, AI watermark",
@@ -613,7 +613,7 @@ def _build_competitive_package(
         "reference_url": "channel_visual_style.yaml / studio reference stills",
         "format": "virtual_news_studio",
         "anchor": "Chloe",
-        "channel_badge": "Tech Frontier",
+        "channel_badge": "Clarion Frame",
         "trust_tactics": [
             "Consistent human anchor (Chloe) builds parasocial trust",
             "Real company logos placed on floating screens",
@@ -668,7 +668,7 @@ def _build_competitive_package(
             "background": "cyan/teal gradient studio",
             "accent_primary": "neon cyan / holographic white",
             "type": "bold geometric sans on glass",
-            "channel_badge": "Tech Frontier upper-right",
+            "channel_badge": "Clarion Frame upper-right",
         },
         "channel_visual_style": "virtual_studio_anchor",
         "studio_reference": studio_reference_manifest(),
@@ -684,7 +684,7 @@ def _markdown(package: VisualPackage, extras: dict[str, Any]) -> str:
         "# Visual Package — Virtual News Studio (Chloe)\n",
         f"**Format:** {strat.get('format', 'virtual_news_studio')} · "
         f"**Anchor:** {strat.get('anchor', 'Chloe')} · "
-        f"**Badge:** {strat.get('channel_badge', 'Tech Frontier')}\n",
+        f"**Badge:** {strat.get('channel_badge', 'Clarion Frame')}\n",
         f"**Peer bar:** {strat.get('peer_bar', '')}\n",
         f"**Shots:** {len(package.shot_list)} · "
         f"**Motion graphic recipes:** {len(extras.get('motion_graphics') or [])} · "
@@ -717,6 +717,9 @@ def _markdown(package: VisualPackage, extras: dict[str, Any]) -> str:
 
     lines.append("\n## MUST-DO real screenshots\n")
     for s in extras.get("screen_captures") or []:
+        if not isinstance(s, dict):
+            lines.append(f"- {s}")
+            continue
         lines.append(
             f"- **{s.get('id')}**: {s.get('action')}  \n"
             f"  URL hint: {s.get('url_hint') or 'search topic'}  \n"
@@ -840,11 +843,17 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
                         **(extras.get("creative_strategy") or {}),
                         **data["creative_strategy"],
                     }
-                if data.get("motion_graphics"):
+                if data.get("motion_graphics") and isinstance(
+                    data["motion_graphics"], list
+                ) and all(isinstance(x, dict) for x in data["motion_graphics"]):
                     extras["motion_graphics"] = data["motion_graphics"]
-                if data.get("screen_captures"):
+                if data.get("screen_captures") and isinstance(
+                    data["screen_captures"], list
+                ) and all(isinstance(x, dict) for x in data["screen_captures"]):
                     extras["screen_captures"] = data["screen_captures"]
-                if data.get("on_screen_facts"):
+                if data.get("on_screen_facts") and isinstance(
+                    data["on_screen_facts"], list
+                ) and all(isinstance(x, dict) for x in data["on_screen_facts"]):
                     extras["on_screen_facts"] = data["on_screen_facts"]
                 if len(data.get("shot_list") or []) >= 40:
                     thumbs = [
@@ -949,12 +958,14 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
                     *[
                         f"- [ ] {s.get('id')}: {s.get('action')}"
                         for s in (extras.get("screen_captures") or [])
+                        if isinstance(s, dict)
                     ],
                     "",
                     "## 2. Kinetic stats on glass panels",
                     *[
                         f"- [ ] {m.get('id')}: {m.get('on_screen_text')}"
                         for m in (extras.get("motion_graphics") or [])
+                        if isinstance(m, dict)
                     ],
                     "",
                     "## 3. Chloe studio stills under VO (2–4s hook cuts)",
@@ -963,7 +974,7 @@ def run_visual_director(state: PipelineState) -> dict[str, Any]:
                     "- [ ] Optional logo sting base: `assets/studio_reference/chloe_studio_logo_panel.jpg`",
                     "- [ ] Image-edit only panel content + minor pose — do not reinvent Chloe",
                     "## 4. Thumbnail: Chloe + REAL face/logo on glass + 2–5 word CapCut text",
-                    "## 5. Tech Frontier badge upper-right (never SCENIUM)",
+                    "## 5. Clarion Frame badge upper-right (never SCENIUM)",
                     "",
                 ]
             ),

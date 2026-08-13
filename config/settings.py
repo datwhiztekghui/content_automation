@@ -95,7 +95,7 @@ class Settings(BaseSettings):
     control_api_port: int = Field(default=8787, alias="CONTROL_API_PORT")
 
     # Channel / runtime
-    channel_name: str = Field(default="Tech Frontier", alias="CHANNEL_NAME")
+    channel_name: str = Field(default="Clarion Frame", alias="CHANNEL_NAME")
     default_mode: str = Field(default="core", alias="DEFAULT_MODE")
     default_profile: str = Field(default="", alias="DEFAULT_PROFILE")
     auto_approve: bool = Field(default=False, alias="AUTO_APPROVE")

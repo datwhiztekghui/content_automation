@@ -1,6 +1,9 @@
 # Channel style — injected into Scriptwriter, Fact-Checker, SEO agents
-channel_name: "Tech Frontier"
-tagline: "Breakthroughs that reshape tomorrow — explained clearly."
+# Storytelling DNA: hybrid of MKBHD (trust + one thesis), Mrwhosetheboss
+# (human/market stakes + cause-chain), AI Revolution (cold open + race + kinetic proof).
+
+channel_name: "Clarion Frame"
+tagline: "Clear frames on the breakthroughs reshaping tomorrow."
 
 tone:
   primary: "excited but analytical — natural human presenter, not corporate AI"
@@ -11,6 +14,7 @@ tone:
     - curious
     - conversational
     - spoken-first (sounds good read aloud)
+    - FT-style curiosity article read aloud (not Wikipedia, not press release)
   avoid:
     - empty hype
     - unfounded claims
@@ -19,7 +23,45 @@ tone:
     - insider jargon without a plain-language bridge
     - AI tells (delve, tapestry, landscape, game-changer, unlock the power, in today's world)
     - robotic list-speak and stacked superlatives
-    - glued compound tokens that TTS misreads (write "300 watt hours per kilogram" when speaking numbers if needed)
+    - glued compound tokens that TTS misreads
+    - re-opening every section with the same cold-open scene ("Picture a rover…")
+    - bloated restatement of claims already paid off
+
+# Peer hybrid (see storytelling analysis: MKBHD / Mrwhosetheboss / AI Revolution)
+storytelling:
+  hybrid_spine:
+    - id: cold_open
+      peer: "AI Revolution"
+      rule: "0–15s: one concrete claim or tension. No channel welcome. Title must be payable."
+    - id: stakes
+      peer: "Mrwhosetheboss"
+      rule: "15–60s: human or market stakes — money, power, delay, jobs, who can still buy, who wins."
+    - id: point_of_video
+      peer: "MKBHD"
+      rule: "State or imply the single point: by the end the viewer knows if X is real, hype, or half-true."
+    - id: proof_ladder
+      peer: "all three"
+      rule: "Number → source → how it works ONCE → comparison → implication. New info every beat."
+    - id: race_or_timeline
+      peer: "AI Revolution + Arun industry chain"
+      rule: "Who else is in the fight; cause → effect spiral if relevant."
+    - id: open_loop_cta
+      peer: "all three"
+      rule: "Worth-commenting question + soft community CTA. Never hard sell."
+  retention_rules:
+    - "New information or a new visual every short beat — never a new paragraph that restates the old one."
+    - "One thesis per video (MKBHD: what is the point of this video?)."
+    - "Cause-chain over random fact piles (Arun: prices → slowdown → talent leaving → spiral)."
+    - "Shock claims must be paid off with sources and numbers (AI Revolution energy without empty clickbait)."
+    - "Calm authority on verdicts; emotion allowed once if genuine."
+  elements_of_style:
+    - "Omit needless words (Strunk & White)."
+    - "Use the active voice."
+    - "Prefer definite, specific, concrete language over vague generality."
+    - "Put statements in positive form when possible."
+    - "Place emphatic words of a sentence at the end."
+    - "Avoid a succession of loose, identical-structure sentences."
+    - "Do not explain the same claim in every section — advance or cut."
 
 spoken_delivery:
   goal: "Sound like a sharp human host explaining something to a smart friend."
@@ -31,40 +73,53 @@ spoken_delivery:
     - "Rhetorical questions and asides are fine if they feel human, not salesy."
     - "When saying numbers/units, separate them for speech: 'three hundred watt-hours per kilogram', 'twenty to thirty percent'."
     - "Do not sound like a Wikipedia summary. Sound like you just learned this and care."
+    - "Ban: picture this / picture a… as section openers; the kicker; in short; tantalizing; game-changer."
 
 audience:
   primary: "curious professionals and enthusiasts who follow tech, AI, robotics, and science news"
   knowledge_level: "smart generalist — not assume PhD, not talk down"
 
 script_structure:
-  target_runtime_minutes: [12, 16]
-  target_word_count: [1800, 2400]
+  # Prefer tight news/essay runtime; expand only when product or chain earns it
+  target_runtime_minutes: [7, 12]
+  target_word_count: [900, 1600]
+  hard_max_words: 1800
+  min_floor_words: 700
   sections:
     - id: hook
-      duration_seconds: [15, 30]
-      description: "Cold open with a concrete claim, tension, or surprising fact. No channel intro yet."
+      duration_seconds: [10, 25]
+      max_words: 90
+      description: "AI-Rev cold open — concrete claim/tension only. No channel intro. No scene-setting fluff."
     - id: why_it_matters
-      description: "Establish stakes — who is affected, what changes if this is true."
+      max_words: 220
+      description: "Arun stakes — who is squeezed, what changes, money/power/latency. Cause-chain start."
     - id: explanation
-      description: "Clear walkthrough of how the tech/invention/news works."
+      max_words: 280
+      description: "How it works ONCE. Plain language. No re-stating the hook claim as intro."
     - id: benchmarks_demos
-      description: "Numbers, comparisons, demos, or concrete evidence."
+      max_words: 260
+      description: "Numbers, comparisons, demos, sources. Pay off the cold open."
     - id: implications
-      description: "Business, geopolitical, industry, or societal second-order effects."
+      max_words: 220
+      description: "Business, geo, industry second-order effects — advance the chain, don't rehash."
     - id: bigger_picture
-      description: "Zoom out — historical context or where this fits in a larger arc."
+      max_words: 200
+      description: "Race/timeline/arc. Where this sits historically. One beat, not a second essay."
     - id: cta
-      description: "Soft CTA — free resource, related video, or community. Never hard sell."
+      max_words: 90
+      description: "Open-loop question + soft CTA. Recap in one line max."
 
 visual_and_citation_rules:
   - "Include on-screen source cues where claims or numbers appear."
   - "Mark B-roll and lower-third moments in the script as visual cues."
-  - "Prefer primary sources (papers, official blogs, filings) over recaps."
+  - "Prefer primary sources (papers, official blogs, filings, FT/Reuters/Ars) over recaps."
+  - "Kinetic proof: numbers, logos, UI, people on glass panels (Virtual Studio)."
 
 cta_patterns:
   - "If you want a deeper dive on [related topic], it's linked below."
   - "Subscribe if you follow breakthroughs like this — next video covers [tease]."
   - "Join the community discussion in the comments: what should we cover next?"
+  - "What do you think — [binary open question]? Drop your take below."
 
 topic_fit:
   include:
@@ -82,5 +137,5 @@ topic_fit:
 scoring_weights:
   virality: 0.30
   uniqueness: 0.25
-  competition: 0.20  # lower competition = higher score after invert
+  competition: 0.20
   channel_fit: 0.25

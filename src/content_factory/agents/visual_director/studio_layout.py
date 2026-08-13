@@ -4,7 +4,7 @@ Chloe is the constant on-camera presence. Story content (logos, portraits, stats
 article screenshots, product UI, CGI metaphors) lives on **floating glass panels**
 and **video-feed plates** — never as orphan full-frame stock with no studio shell.
 
-Brand: Tech Frontier (upper-right badge). Never leave SCENIUM or third-party marks.
+Brand: Clarion Frame (upper-right badge). Never leave SCENIUM or third-party marks.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ SET_DESIGN: dict[str, str] = {
     "prop": "transparent glass tablet in Chloe's hands (always present)",
     "background": "glowing cyan tech globe + digital matrix walls",
     "furniture": "curved teal sofa mid-ground",
-    "channel_badge": "Tech Frontier logo — upper-right corner, every generative still",
+    "channel_badge": "Clarion Frame logo — upper-right corner, every generative still",
     "grade": "broadcast cyan / teal / near-black, high contrast",
 }
 
@@ -105,7 +105,7 @@ SPATIAL_COMPOSITION_RULES: list[str] = [
     "Chloe center or center-left; never crop her out of generative hero frames.",
     "Glass panels float with slight parallax; cyan edge light; subtle transparency.",
     "Max 1–2 primary panels in focus; avoid cluttered HUD soup.",
-    "Tech Frontier badge always upper-right on generative stills.",
+    "Clarion Frame badge always upper-right on generative stills.",
     "Tablet interaction: Chloe swipes/taps to 'change' panel content between shots.",
     "Thumbnails: Chloe + one giant glass panel with mega text + real logo/face assets.",
 ]
@@ -122,7 +122,7 @@ def studio_prompt_suffix(asset_class: str = "cinematic_broll") -> str:
     panel = panel_for_asset(asset_class)
     return (
         f" Layout: Chloe in virtual newsroom; content on floating glass panel "
-        f"({panel['slot']}: {panel['position']}). Tech Frontier badge top-right. "
+        f"({panel['slot']}: {panel['position']}). Clarion Frame badge top-right. "
         f"No SCENIUM mark. No AI watermark."
     )
 
@@ -147,7 +147,7 @@ def studio_layout_manifest() -> dict[str, Any]:
     return {
         "format": "virtual_news_studio",
         "anchor": "Chloe",
-        "channel_badge": "Tech Frontier",
+        "channel_badge": "Clarion Frame",
         "set_design": SET_DESIGN,
         "panel_slots": PANEL_SLOTS,
         "asset_to_panel": ASSET_TO_PANEL,
@@ -159,6 +159,6 @@ def studio_layout_manifest() -> dict[str, Any]:
             "Layer 1: floating glass panel PNG/effect",
             "Layer 2: real logo / real portrait / screenshot / kinetic type inside panel",
             "Layer 3: source chip + optional lower-third",
-            "Layer 4: Tech Frontier badge (upper-right) if not burned in",
+            "Layer 4: Clarion Frame badge (upper-right) if not burned in",
         ],
     }
