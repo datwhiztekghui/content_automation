@@ -73,7 +73,7 @@ def test_looks_bloated_and_trim():
 
 
 def test_heuristic_script_meets_floor_not_bloated():
-    script = _heuristic_script(_brief(), "Clarion Frame")
+    script = _heuristic_script(_brief(), "AIInfoRoom")
     # Tight hybrid: complete, not padded to old 1800–2400
     assert script.word_count >= 200
     assert script.word_count <= HARD_MAX_WORDS
@@ -87,6 +87,6 @@ def test_heuristic_script_meets_floor_not_bloated():
 def test_expand_brief_section_not_empty():
     b = _brief()
     for sid, title, _g, target, *_rest in SECTION_PLAN:
-        text = _expand_brief_section(b, sid, title, "Clarion Frame", target)
+        text = _expand_brief_section(b, sid, title, "AIInfoRoom", target)
         assert _word_count(text) >= 15
         assert "placeholder" not in text.lower()

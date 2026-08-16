@@ -88,7 +88,7 @@ def _candidates_from_llm(
 ) -> list[TopicCandidate]:
     weights = (style.get("scoring_weights") or {}) if style else {}
     user = {
-        "channel": style.get("channel_name", "Clarion Frame"),
+        "channel": style.get("channel_name", "AIInfoRoom"),
         "topic_hint": topic_hint or None,
         "topic_fit": style.get("topic_fit"),
         "signals": signals[:40],

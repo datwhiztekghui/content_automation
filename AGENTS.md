@@ -9,7 +9,7 @@ Orchestration is LangGraph; each agent is a modular Python package under `src/co
 
 | Field | Value |
 |--------|--------|
-| Working name | **Clarion Frame** (override via `CHANNEL_NAME` / `config/channel_style.yaml`) |
+| Working name | **AIInfoRoom** (override via `CHANNEL_NAME` / `config/channel_style.yaml`) |
 | Niche | Tech, inventions, robotics, AI breakthroughs, science, and related news |
 | Peer style | Clear, high-retention explainers (inspired by channels like AI Revolution, but **broader than pure AI**) |
 | Audience | Curious professionals and smart generalists |
@@ -182,7 +182,7 @@ see `config/channel_visual_style.yaml`).
 - **CEOs / public figures → REAL photos** on glass when they drive the news (never invent faces)
 - **Proof screenshots** as black-on-black cards with **outlet source chips** on glass
 - **Video feeds** (demos/robots/UI) stay inside panels — studio shell remains
-- **Channel badge:** Clarion Frame upper-right — never SCENIUM or third-party marks
+- **Channel badge:** AIInfoRoom upper-right — never SCENIUM or third-party marks
 - **Thumbnails:** Chloe + giant glass panel (real face/logo/product) + 2–6 word mega text
 - **Only ban AI watermarks** (Gemini/Grok/Midjourney stamps) — not logos or titles
 - Hook cuts ~2–4s; body ~4–7s

@@ -159,7 +159,7 @@ Captured in `AGENTS.md` + `config/channel_style.yaml` and injected into Scriptwr
 | CTA | Soft: free resource, next video, community — never hard sell |
 | Avoid | Hype without substance, unfounded claims, clickbait that the script cannot pay off |
 
-Working channel name: **"Clarion Frame"** (override via `CHANNEL_NAME` / `config/channel_style.yaml`).
+Working channel name: **"AIInfoRoom"** (override via `CHANNEL_NAME` / `config/channel_style.yaml`).
 
 ---
 
@@ -404,7 +404,7 @@ Checkpointing: `MemorySaver` for dev; `SqliteSaver` for headless resume.
 |----------|---------|
 | Orchestrator | LangGraph |
 | LLM | xAI Grok (`grok-4.5`) |
-| Channel name | **Clarion Frame** (override in config / `CHANNEL_NAME`) |
+| Channel name | **AIInfoRoom** (override in config / `CHANNEL_NAME`) |
 | Assembler v1 | Edit bible + asset list (not binary CapCut) |
 | Non-YouTube social | Ready-to-post packages; live post if creds exist |
 | Memory v1 | JSON/SQLite files under `data/learnings/` |
