@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AIInfoRoom primary mark: Glass Room + Info Beam
+     Metaphor: three floating glass panels form an open room;
+     a single vertical beam is clarity / the signal inside the noise. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="AIInfoRoom mark">
+  <defs>
+    <linearGradient id="glassL" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7DF9FF" stop-opacity="0.55"/>
+      <stop offset="45%" stop-color="#2ED3E8" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#0A8FA3" stop-opacity="0.35"/>
+    </linearGradient>
+    <linearGradient id="glassR" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#A6FBFF" stop-opacity="0.5"/>
+      <stop offset="50%" stop-color="#22C7DB" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#087A8C" stop-opacity="0.32"/>
+    </linearGradient>
+    <linearGradient id="glassTop" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#E8FFFF" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#2ED3E8" stop-opacity="0.12"/>
+    </linearGradient>
+    <linearGradient id="floor" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#2ED3E8" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#041218" stop-opacity="0.55"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="70%" stop-color="#7DF9FF" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#2ED3E8" stop-opacity="0.55"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="72%" r="42%">
+      <stop offset="0%" stop-color="#7DF9FF" stop-opacity="0.55"/>
+      <stop offset="55%" stop-color="#2ED3E8" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#02080C" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Backdrop -->
+  <rect width="512" height="512" fill="#050B10"/>
+  <circle cx="256" cy="300" r="170" fill="url(#glow)"/>
+
+  <!-- Isometric open glass room (no closed box — room as invitation) -->
+  <!-- Floor diamond -->
+  <polygon points="256,360 150,300 256,240 362,300" fill="url(#floor)" stroke="#5CEBFF" stroke-width="3" stroke-linejoin="round" opacity="0.95"/>
+
+  <!-- Left glass panel -->
+  <polygon points="150,300 150,170 256,110 256,240" fill="url(#glassL)" stroke="#7DF9FF" stroke-width="3.5" stroke-linejoin="round"/>
+  <!-- Right glass panel -->
+  <polygon points="362,300 362,170 256,110 256,240" fill="url(#glassR)" stroke="#7DF9FF" stroke-width="3.5" stroke-linejoin="round"/>
+  <!-- Floating top / ceiling panel (slightly detached = "floating glass") -->
+  <polygon points="256,78 170,128 256,178 342,128" fill="url(#glassTop)" stroke="#A6FBFF" stroke-width="3" stroke-linejoin="round" opacity="0.95"/>
+
+  <!-- Specular edge accents -->
+  <polyline points="158,180 250,126" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-opacity="0.35"/>
+  <polyline points="354,180 262,126" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-opacity="0.28"/>
+
+  <!-- Info beam (the "i" without letterform cliché) -->
+  <g filter="url(#softGlow)">
+    <rect x="251" y="145" width="10" height="195" rx="5" fill="url(#beam)"/>
+    <circle cx="256" cy="348" r="10" fill="#E8FFFF" opacity="0.95"/>
+    <circle cx="256" cy="348" r="22" fill="#7DF9FF" opacity="0.25"/>
+  </g>
+</svg>

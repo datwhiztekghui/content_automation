@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AIInfoRoom horizontal lockup: mark + wordmark -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 280" role="img" aria-label="AIInfoRoom logo">
+  <defs>
+    <linearGradient id="glassL" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7DF9FF" stop-opacity="0.55"/>
+      <stop offset="45%" stop-color="#2ED3E8" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#0A8FA3" stop-opacity="0.35"/>
+    </linearGradient>
+    <linearGradient id="glassR" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#A6FBFF" stop-opacity="0.5"/>
+      <stop offset="50%" stop-color="#22C7DB" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#087A8C" stop-opacity="0.32"/>
+    </linearGradient>
+    <linearGradient id="glassTop" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#E8FFFF" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#2ED3E8" stop-opacity="0.12"/>
+    </linearGradient>
+    <linearGradient id="floor" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#2ED3E8" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#041218" stop-opacity="0.55"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="70%" stop-color="#7DF9FF" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#2ED3E8" stop-opacity="0.55"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="72%" r="42%">
+      <stop offset="0%" stop-color="#7DF9FF" stop-opacity="0.45"/>
+      <stop offset="60%" stop-color="#2ED3E8" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#02080C" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="980" height="280" fill="#050B10"/>
+
+  <!-- Mark (scaled into left region) -->
+  <g transform="translate(24,20) scale(0.88)">
+    <circle cx="140" cy="150" r="95" fill="url(#glow)"/>
+    <polygon points="140,210 78,172 140,134 202,172" fill="url(#floor)" stroke="#5CEBFF" stroke-width="2.5" stroke-linejoin="round"/>
+    <polygon points="78,172 78,95 140,58 140,134" fill="url(#glassL)" stroke="#7DF9FF" stroke-width="2.8" stroke-linejoin="round"/>
+    <polygon points="202,172 202,95 140,58 140,134" fill="url(#glassR)" stroke="#7DF9FF" stroke-width="2.8" stroke-linejoin="round"/>
+    <polygon points="140,38 90,68 140,98 190,68" fill="url(#glassTop)" stroke="#A6FBFF" stroke-width="2.4" stroke-linejoin="round"/>
+    <g filter="url(#softGlow)">
+      <rect x="136" y="78" width="8" height="118" rx="4" fill="url(#beam)"/>
+      <circle cx="140" cy="202" r="7" fill="#E8FFFF"/>
+    </g>
+  </g>
+
+  <!-- Wordmark: AIInfoRoom — geometric, tight tracking -->
+  <g font-family="Inter, Segoe UI, Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="-1.5">
+    <text x="300" y="162" font-size="72" fill="#F4FBFF">
+      <tspan fill="#7DF9FF">AI</tspan><tspan fill="#F4FBFF">Info</tspan><tspan fill="#B8C5CC">Room</tspan>
+    </text>
+  </g>
+  <text x="304" y="198" font-family="Inter, Segoe UI, Arial, Helvetica, sans-serif" font-size="18" font-weight="500" letter-spacing="4" fill="#5A7A86">
+    CLEAR AI &amp; TECH THAT MATTERS
+  </text>
+</svg>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Upper-right channel badge for Virtual Studio stills (compact) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 96" role="img" aria-label="AIInfoRoom channel badge">
+  <defs>
+    <linearGradient id="glassL" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7DF9FF" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#0A8FA3" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="glassR" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#A6FBFF" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#087A8C" stop-opacity="0.28"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#7DF9FF"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-40%" width="140%" height="180%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <!-- Pill plate -->
+  <rect x="4" y="8" width="412" height="80" rx="16" fill="#050B10" fill-opacity="0.72" stroke="#2ED3E8" stroke-opacity="0.35" stroke-width="1.5" filter="url(#shadow)"/>
+
+  <!-- Mini mark -->
+  <g transform="translate(18,18) scale(0.28)">
+    <polygon points="256,360 150,300 256,240 362,300" fill="#0A3A44" stroke="#5CEBFF" stroke-width="10" stroke-linejoin="round"/>
+    <polygon points="150,300 150,170 256,110 256,240" fill="url(#glassL)" stroke="#7DF9FF" stroke-width="10" stroke-linejoin="round"/>
+    <polygon points="362,300 362,170 256,110 256,240" fill="url(#glassR)" stroke="#7DF9FF" stroke-width="10" stroke-linejoin="round"/>
+    <polygon points="256,78 170,128 256,178 342,128" fill="#A6FBFF" fill-opacity="0.35" stroke="#A6FBFF" stroke-width="8" stroke-linejoin="round"/>
+    <rect x="246" y="145" width="20" height="195" rx="10" fill="url(#beam)"/>
+    <circle cx="256" cy="348" r="16" fill="#E8FFFF"/>
+  </g>
+
+  <text x="112" y="60" font-family="Inter, Segoe UI, Arial, Helvetica, sans-serif" font-size="34" font-weight="700" letter-spacing="-0.5">
+    <tspan fill="#7DF9FF">AI</tspan><tspan fill="#F4FBFF">Info</tspan><tspan fill="#9FB3BC">Room</tspan>
+  </text>
+</svg>
